@@ -43,16 +43,24 @@ visor 3D, la documentación, la licencia y las cinco piezas de calibración
 con `./render.sh`. Y los `.zip`.
 
 Si quieres el juego completo de STL publicado, lo habitual en proyectos de
-impresión 3D no es meterlos en el repositorio sino colgarlos como **Release**:
+impresión 3D no es meterlos en el repositorio sino colgarlos como **Release**.
+
+`render.sh` ya exporta en STL binario, así que no hay que convertir nada:
 
 ```bash
-./render.sh todas                   # genera stl/v1..v5 a calidad final
-python3 - <<'EOF'
-import trimesh, glob
-for f in glob.glob("stl/v*/*.stl"):
-    trimesh.load(f).export(f)        # reescribe en binario, ~5 veces menos
-EOF
+./render.sh todas       # genera stl/v1..v5 a calidad final, en binario
 gh release create v5.0 stl/v*/*.stl --title "Sanding Stick v5.0"
+```
+
+**En Windows**, `render.sh` es un script de bash: ejecútalo desde **Git Bash**
+(viene con Git para Windows) o desde WSL. En PowerShell no funciona.
+
+Y si lanzas el `gh release` desde PowerShell, el comodín hay que expandirlo a
+mano, porque PowerShell no lo hace por los programas externos:
+
+```powershell
+./render.sh todas       # esto, desde Git Bash
+gh release create v5.0 (Get-ChildItem stl\v*\*.stl).FullName --title "Sanding Stick v5.0"
 ```
 
 ## Licencia

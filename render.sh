@@ -7,7 +7,13 @@
 #   ./render.sh v2 preview       → rápido ($fn=48) + PNG       → preview_stl/v2/, png/v2/
 #
 # Versiones:  v1 hexágono a presión · v2 bayoneta · v3 rosca · v4 imán · v5 clip
+#
+# Los STL salen en BINARIO (--export-format binstl): unas cinco veces más
+# pequeños que en ASCII y los lee igual cualquier laminador.
+#
 # Requiere openscad en el PATH (o exportar OPENSCAD=/ruta/openscad).
+# En Windows, ejecútalo desde Git Bash o WSL: es un script de bash y PowerShell
+# no lo entiende.
 set -euo pipefail
 cd "$(dirname "$0")"
 OPENSCAD="${OPENSCAD:-openscad}"
@@ -27,7 +33,8 @@ for V in "${VERS[@]}"; do
   render() {
     local name="$1"; shift
     echo "   · $name"
-    $XVFB "$OPENSCAD" -o "$OUT/$name.stl" -D "\$fn=$FN" "$@" "$SCAD" 2>&1 | grep -E "ERROR" || true
+    $XVFB "$OPENSCAD" --export-format binstl -o "$OUT/$name.stl" -D "\$fn=$FN" "$@" "$SCAD" \
+      2>&1 | grep -E "ERROR" || true
     if [[ "$PNG" == "1" ]]; then
       $XVFB "$OPENSCAD" -o "$PNGD/$name.png" --imgsize=1000,750 --viewall --autocenter \
         --camera=0,0,0,60,0,35,0 --projection=p --colorscheme=Tomorrow -D "\$fn=$FN" "$@" "$SCAD" \
