@@ -1,0 +1,689 @@
+<title>Sanding Stick · Cinco Uniones</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Saira+Condensed:wght@500;600;700&display=swap">
+<style>
+:root{
+  --bg:#e9ebee; --panel:#f7f8f9; --panel-2:#dfe3e7; --ink:#1b1e23; --ink-2:#4e565f;
+  --ink-3:#79828c; --line:#c3cad1; --line-2:#d8dde2;
+  --amber:#c98a06; --amber-2:#f0b429; --steel:#3d5f8f; --ok:#2f7d55; --warn:#a8542a;
+  --grid:rgba(27,30,35,.09); --shadow:0 1px 2px rgba(20,25,35,.08),0 8px 24px -14px rgba(20,25,35,.35);
+  --canvas-bg:#dfe3e8;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#15181c; --panel:#1c2026; --panel-2:#23282f; --ink:#e8ecf0; --ink-2:#a9b3bd;
+    --ink-3:#79838d; --line:#333a43; --line-2:#282e35;
+    --amber:#e8b23c; --amber-2:#f5c85e; --steel:#7fa4d8; --ok:#5cbb87; --warn:#d98455;
+    --grid:rgba(232,236,240,.07); --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -18px rgba(0,0,0,.9);
+    --canvas-bg:#12151a;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15181c; --panel:#1c2026; --panel-2:#23282f; --ink:#e8ecf0; --ink-2:#a9b3bd;
+  --ink-3:#79838d; --line:#333a43; --line-2:#282e35;
+  --amber:#e8b23c; --amber-2:#f5c85e; --steel:#7fa4d8; --ok:#5cbb87; --warn:#d98455;
+  --grid:rgba(232,236,240,.07); --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -18px rgba(0,0,0,.9);
+  --canvas-bg:#12151a;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+  font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px 72px}
+h1,h2,h3{font-family:"Saira Condensed","IBM Plex Sans",system-ui,sans-serif;font-weight:700;
+  letter-spacing:.01em;text-wrap:balance;margin:0}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.eyebrow{font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:12px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-3)}
+
+.sheet{border-bottom:1px solid var(--line);background:
+  linear-gradient(var(--grid) 1px,transparent 1px) 0 0/100% 22px,
+  linear-gradient(90deg,var(--grid) 1px,transparent 1px) 0 0/22px 100%,var(--panel)}
+.sheet-in{max-width:1180px;margin:0 auto;padding:26px 20px 0}
+.tb{display:flex;flex-wrap:wrap;align-items:flex-end;gap:22px 34px;
+  border:1px solid var(--line);border-bottom:none;background:var(--panel);padding:16px 18px;
+  border-radius:3px 3px 0 0}
+.tb-main{flex:1 1 320px;min-width:280px}
+.tb h1{font-size:clamp(30px,4.6vw,46px);line-height:1;letter-spacing:-.005em}
+.tb h1 span{color:var(--amber)}
+.tb-sub{color:var(--ink-2);max-width:54ch;margin-top:8px;font-size:14.5px}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:2px;flex:1 1 380px;
+  background:var(--line);border:1px solid var(--line)}
+.field{background:var(--panel);padding:7px 9px}
+.field b{display:block;font-family:"Saira Condensed",sans-serif;font-size:10.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.field span{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--ink)}
+
+.viewer{display:grid;grid-template-columns:1fr 272px;border:1px solid var(--line);background:var(--panel);
+  border-radius:0 0 3px 3px;overflow:hidden;box-shadow:var(--shadow)}
+@media(max-width:860px){.viewer{grid-template-columns:1fr}}
+.stage{position:relative;min-height:460px;background:var(--canvas-bg)}
+#cv{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+#cv:active{cursor:grabbing}
+.stage-hud{position:absolute;left:12px;bottom:10px;display:flex;gap:14px;align-items:baseline;
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);pointer-events:none}
+.stage-hud b{color:var(--ink-2);font-weight:500}
+.stage-top{position:absolute;left:12px;top:11px;display:flex;gap:8px;flex-wrap:wrap}
+.chip{font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:11.5px;letter-spacing:.1em;
+  text-transform:uppercase;padding:4px 9px;border:1px solid var(--line);border-radius:2px;
+  background:var(--panel);color:var(--ink-2);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--amber);border-color:var(--amber);color:#15181c}
+.chip:focus-visible,.pbtn:focus-visible,.vbtn:focus-visible,input:focus-visible{outline:2px solid var(--steel);outline-offset:2px}
+.rail{border-left:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;
+  max-height:600px;overflow:auto}
+@media(max-width:860px){.rail{border-left:none;border-top:1px solid var(--line);max-height:none}}
+.rail-h{padding:10px 14px 6px;background:var(--panel);border-bottom:1px solid var(--line-2)}
+.vers{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;padding:8px 10px;background:var(--line-2)}
+.vbtn{font-family:"Saira Condensed",sans-serif;font-weight:700;font-size:13px;letter-spacing:.06em;
+  padding:6px 0;border:1px solid var(--line);background:var(--panel);color:var(--ink-2);cursor:pointer;
+  border-radius:2px}
+.vbtn:hover{color:var(--ink)}
+.vbtn[aria-pressed="true"]{background:var(--steel);border-color:var(--steel);color:#fff}
+.vname{padding:6px 14px 9px;font-size:13px;color:var(--ink-2);border-bottom:1px solid var(--line-2)}
+.vname b{color:var(--ink);font-weight:600}
+.plist{display:flex;flex-direction:column}
+.pbtn{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:8px;text-align:left;
+  padding:7px 14px;background:none;border:none;border-bottom:1px solid var(--line-2);color:var(--ink-2);
+  cursor:pointer;font:inherit;font-size:13.5px}
+.pbtn:hover:not(:disabled){background:var(--panel-2);color:var(--ink)}
+.pbtn:disabled{opacity:.38;cursor:not-allowed}
+.pbtn[aria-current="true"]{background:var(--panel-2);color:var(--ink);box-shadow:inset 3px 0 0 var(--amber)}
+.pbtn em{font-style:normal;font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3)}
+.readout{border-top:1px solid var(--line);padding:11px 14px;display:grid;
+  grid-template-columns:auto 1fr;gap:3px 12px;font-family:"IBM Plex Mono",monospace;font-size:12.5px;margin:0}
+.readout dt{color:var(--ink-3)}
+.readout dd{margin:0;color:var(--ink);text-align:right}
+.slider{padding:10px 14px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.slider label{font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:11.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3);white-space:nowrap}
+.slider input{flex:1;accent-color:var(--amber)}
+
+section{margin-top:56px}
+.sec-h{display:flex;align-items:baseline;gap:14px;margin-bottom:18px;
+  border-bottom:1px solid var(--line);padding-bottom:9px}
+.sec-h h2{font-size:23px}
+.sec-h p{margin:0;color:var(--ink-2);font-size:14px;flex:1;min-width:0}
+.num{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--amber);letter-spacing:.06em}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:16px}
+.card{border:1px solid var(--line);background:var(--panel);border-radius:3px;padding:15px 16px 14px;
+  display:flex;flex-direction:column;gap:9px}
+.card h3{font-size:17px}
+.card p{margin:0;color:var(--ink-2);font-size:13.8px}
+.card ul{margin:0;padding-left:16px;color:var(--ink-2);font-size:13.5px;display:flex;flex-direction:column;gap:3px}
+.card .specs{display:flex;flex-wrap:wrap;gap:5px}
+.tag{font-family:"IBM Plex Mono",monospace;font-size:11.5px;padding:2px 7px;border:1px solid var(--line);
+  border-radius:2px;color:var(--ink-2);background:var(--panel-2)}
+.verdict{font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:11.5px;letter-spacing:.12em;
+  text-transform:uppercase;margin-top:auto}
+.verdict.a{color:var(--ok)}.verdict.b{color:var(--amber)}.verdict.c{color:var(--warn)}
+.card.pick{border-color:var(--amber);box-shadow:0 0 0 1px var(--amber)}
+.link{background:none;border:none;padding:0;font:inherit;font-size:13px;color:var(--steel);cursor:pointer;
+  text-align:left;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.link:hover{color:var(--amber)}
+
+.dwg{border:1px solid var(--line);background:var(--panel);border-radius:3px;padding:6px;overflow-x:auto}
+.dwg svg{display:block;min-width:660px;width:100%;height:auto}
+
+.tbl-wrap{border:1px solid var(--line);border-radius:3px;overflow-x:auto;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:13.5px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line-2);vertical-align:top}
+thead th{font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:11.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3);background:var(--panel-2);border-bottom:1px solid var(--line);
+  position:sticky;top:0}
+tbody tr:hover{background:var(--panel-2)}
+td.n{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;color:var(--ink-2);white-space:nowrap}
+td.name{font-weight:500}
+.grit{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-3)}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:middle}
+
+.split{display:grid;grid-template-columns:1.15fr .85fr;gap:20px}
+@media(max-width:800px){.split{grid-template-columns:1fr}}
+.note{border-left:2px solid var(--amber);padding:2px 0 2px 13px;color:var(--ink-2);font-size:13.8px}
+.steps{counter-reset:s;list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:11px}
+.steps li{counter-increment:s;position:relative;padding-left:31px;color:var(--ink-2);font-size:14px}
+.steps li::before{content:counter(s,decimal-leading-zero);position:absolute;left:0;top:1px;
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--amber)}
+.steps b{color:var(--ink);font-weight:600}
+code{font-family:"IBM Plex Mono",monospace;font-size:12.5px;background:var(--panel-2);
+  border:1px solid var(--line-2);border-radius:2px;padding:1px 5px;color:var(--ink)}
+pre{margin:0;overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:3px;
+  padding:12px 14px;font-family:"IBM Plex Mono",monospace;font-size:12.5px;line-height:1.7;color:var(--ink-2)}
+pre b{color:var(--amber);font-weight:400}
+footer{margin-top:60px;padding-top:18px;border-top:1px solid var(--line);color:var(--ink-3);font-size:13px;
+  display:flex;flex-wrap:wrap;gap:8px 26px;justify-content:space-between}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="sheet"><div class="sheet-in">
+  <div class="tb">
+    <div class="tb-main">
+      <div class="eyebrow">Herramienta de acabado &middot; familia de diseños</div>
+      <h1>Sanding Stick <span>×5</span></h1>
+      <p class="tb-sub">Un mango del tamaño de un bolígrafo y catorce cabezales intercambiables para
+        lijar impresiones 3D y filigranas en madera. Lo que cambia entre las cinco versiones es
+        <b>cómo se engancha el cabezal</b>: a presión, de bayoneta, roscado, con imán o de clip.
+        Todo lo demás es idéntico.</p>
+    </div>
+    <div class="fields">
+      <div class="field"><b>Versiones</b><span>1 – 5</span></div>
+      <div class="field"><b>Unidades</b><span>mm</span></div>
+      <div class="field"><b>Impresora</b><span>A1 Mini</span></div>
+      <div class="field"><b>Material</b><span>PLA / PETG</span></div>
+      <div class="field"><b>Piezas</b><span>18 × 5</span></div>
+      <div class="field"><b>Fecha</b><span>07-09-26</span></div>
+    </div>
+  </div>
+
+  <div class="viewer">
+    <div class="stage">
+      <canvas id="cv"></canvas>
+      <div class="stage-top">
+        <button class="chip" id="tMontado" aria-pressed="true">Montado</button>
+        <button class="chip" id="tCama" aria-pressed="true">Cama 180</button>
+        <button class="chip" id="tAristas" aria-pressed="true">Aristas</button>
+      </div>
+      <div class="stage-hud"><span>Arrastra para girar · rueda para acercar</span>
+        <span>Retícula <b>10 mm</b></span></div>
+    </div>
+    <div class="rail">
+      <div class="vers" id="vers"></div>
+      <div class="vname" id="vname"></div>
+      <div class="rail-h"><div class="eyebrow">Mango</div></div>
+      <div class="plist" id="listMangos"></div>
+      <div class="rail-h"><div class="eyebrow">Cabezal</div></div>
+      <div class="plist" id="listCabezales"></div>
+      <div class="slider">
+        <label for="expl">Despiece</label>
+        <input type="range" id="expl" min="0" max="100" value="0" aria-label="Separar mango y cabezal">
+      </div>
+      <dl class="readout" id="readout"></dl>
+    </div>
+  </div>
+</div></div>
+
+<div class="wrap">
+
+<section id="uniones">
+  <div class="sec-h"><span class="num">01</span><h2>Las cinco uniones</h2>
+    <p>Mismo mango, mismos cabezales, misma orientación de impresión. Sólo cambia el enganche.</p></div>
+  <div class="cards">
+    <div class="card">
+      <div class="specs"><span class="tag">HEX 6 AF</span><span class="tag">0,15 mm/lado</span></div>
+      <h3>v1 · Hexágono a presión</h3>
+      <p>Espiga hexagonal de 6 mm entrecaras que entra a fricción. Sin piezas móviles, sin nada que
+        comprar, y las seis caras impiden que el cabezal gire al lijar de canto.</p>
+      <ul><li>Lo más simple que funciona</li><li>El ajuste depende de calibrar <code>holgura</code></li>
+        <li>Se afloja con el uso, hay que reapretar</li></ul>
+      <span class="verdict b">Simple · exige calibrar</span>
+      <button class="link" data-go="v1">Verla en el visor →</button>
+    </div>
+    <div class="card pick">
+      <div class="specs"><span class="tag">Ø8,6</span><span class="tag">giro 90°</span><span class="tag">rampa 0,25</span></div>
+      <h3>v2 · Bayoneta de 1/4 de vuelta</h3>
+      <p>Dos tetones recorren un canal helicoidal cuyo techo baja 0,25 mm: el giro aprieta el cabezal
+        contra el hombro. Cuña autoblocante, con clic al entrar en el asiento.</p>
+      <ul><li>Se mete y se gira: un solo gesto</li><li>No se afloja sola ni se sale al tirar</li>
+        <li>La geometría más delicada de imprimir</li></ul>
+      <span class="verdict a">La recomendada</span>
+      <button class="link" data-go="v2">Verla en el visor →</button>
+    </div>
+    <div class="card">
+      <div class="specs"><span class="tag">Ø8 × paso 2</span><span class="tag">6 vueltas</span></div>
+      <h3>v3 · Rosca cuadrada</h3>
+      <p>Filete cuadrado en vez de triangular: en FDM sale mucho mejor y agarra más superficie. El
+        cabezal apoya en un hombro plano, así que queda perpendicular y sin juego.</p>
+      <ul><li>La unión más firme y rígida</li><li>Cambiar cabezal son tres vueltas</li>
+        <li>Sensible a la calibración de flujo</li></ul>
+      <span class="verdict b">La más firme · la más lenta</span>
+      <button class="link" data-go="v3">Verla en el visor →</button>
+    </div>
+    <div class="card">
+      <div class="specs"><span class="tag">imán Ø6×3</span><span class="tag">espiga en D</span></div>
+      <h3>v4 · Imán</h3>
+      <p>Una espiga Ø9 con cara plana orienta y hace de chaveta; dos imanes de neodimio enfrentados
+        hacen la retención. Se acerca y se pega solo.</p>
+      <ul><li>El cambio más rápido, con una mano</li><li>Hay que comprar 15 imanes y pegarlos</li>
+        <li>Ojo con la polaridad al encolar</li></ul>
+      <span class="verdict c">Instantánea · requiere comprar</span>
+      <button class="link" data-go="v4">Verla en el visor →</button>
+    </div>
+    <div class="card">
+      <div class="specs"><span class="tag">2 brazos</span><span class="tag">pestaña 0,6</span></div>
+      <h3>v5 · Clip elástico</h3>
+      <p>El vástago está partido en dos brazos flexibles con pestaña. Se empuja hasta el clic y se saca
+        de un tirón. Rampas de 40° por los dos lados: entra y sale.</p>
+      <ul><li>Sin girar, sin roscar, sin comprar nada</li><li>Los brazos son la pieza que se fatiga</li>
+        <li>Mejor en PETG que en PLA</li></ul>
+      <span class="verdict b">Rápida · imprímela en PETG</span>
+      <button class="link" data-go="v5">Verla en el visor →</button>
+    </div>
+  </div>
+</section>
+
+<section id="comparativa">
+  <div class="sec-h"><span class="num">02</span><h2>Cuál elegir</h2>
+    <p>Las cinco están modeladas, verificadas y listas para imprimir. Estos son los criterios que las separan.</p></div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Criterio</th><th>v1 presión</th><th>v2 bayoneta</th><th>v3 rosca</th><th>v4 imán</th><th>v5 clip</th></tr></thead>
+      <tbody>
+        <tr><td class="name">Gesto de cambio</td><td>tirar y empujar</td><td>meter y girar 90°</td>
+          <td>3 vueltas</td><td>acercar</td><td>empujar hasta el clic</td></tr>
+        <tr><td class="name">Aguanta el tirón</td><td>regular</td><td><b>sí, bloqueo axial</b></td>
+          <td><b>sí</b></td><td>se separa al tirar</td><td>sí, hasta cierta fuerza</td></tr>
+        <tr><td class="name">Juego tras 100 cambios</td><td>aparece</td><td>lo compensa la rampa</td>
+          <td>ninguno</td><td>ninguno</td><td>aparece si se fatiga</td></tr>
+        <tr><td class="name">Hay que comprar algo</td><td>no</td><td>no</td><td>no</td>
+          <td><b>15 imanes Ø6×3</b></td><td>no</td></tr>
+        <tr><td class="name">Riesgo al imprimir</td><td>bajo</td><td>medio</td><td>medio</td>
+          <td>bajo</td><td>bajo</td></tr>
+        <tr><td class="name">Parámetro a calibrar</td><td class="n">holgura 0,15</td><td class="n">bay_holgura 0,18</td>
+          <td class="n">ros_holgura 0,25</td><td class="n">esp_holgura 0,20</td><td class="n">snap_pest 0,6</td></tr>
+        <tr><td class="name">Material</td><td>PLA</td><td>PLA o PETG</td><td>PETG mejor</td>
+          <td>PLA</td><td><b>PETG</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note" style="margin-top:16px">Si sólo vas a imprimir una: la <b>v2</b>. Es la única que
+    combina cambio rápido con bloqueo axial real, y no depende de comprar nada ni de que un brazo
+    elástico aguante mil ciclos.</p>
+</section>
+
+<section id="bayoneta">
+  <div class="sec-h"><span class="num">03</span><h2>Cómo funciona la bayoneta</h2>
+    <p>La unión de la v2 en detalle: el canal no es horizontal, sube 0,25 mm y eso es lo que aprieta.</p></div>
+  <div class="split">
+    <div class="dwg">
+      <svg viewBox="0 0 720 300" role="img" aria-label="Plano de la bayoneta: vástago de 8,6 mm con ranura en L, canal con rampa de 0,25 mm y giro de bloqueo de 90 grados">
+        <defs>
+          <marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <path d="M0,1 L7,4 L0,7 z" fill="var(--ink-2)"/></marker>
+          <marker id="ar2" markerWidth="8" markerHeight="8" refX="1" refY="4" orient="auto">
+            <path d="M8,1 L1,4 L8,7 z" fill="var(--ink-2)"/></marker>
+        </defs>
+        <g font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--ink-2)">
+          <text x="26" y="26" font-family="Saira Condensed, sans-serif" font-size="13"
+                letter-spacing="1.6" fill="var(--ink-3)">DESARROLLO DE LA RANURA</text>
+          <g transform="translate(40,58)">
+            <rect x="0" y="0" width="330" height="180" fill="var(--panel-2)" stroke="var(--line)"/>
+            <!-- entrada axial -->
+            <path d="M20,0 L54,0 L54,118 L20,118 z" fill="var(--amber)" fill-opacity=".2"
+                  stroke="var(--amber)" stroke-width="1.5"/>
+            <!-- canal con rampa -->
+            <path d="M20,118 L300,132 L300,168 L20,154 z" fill="var(--amber)" fill-opacity=".2"
+                  stroke="var(--amber)" stroke-width="1.5"/>
+            <!-- tetón bloqueado -->
+            <rect x="252" y="136" width="44" height="28" fill="var(--steel)" fill-opacity=".45"
+                  stroke="var(--steel)" stroke-width="1.4"/>
+            <text x="274" y="154" text-anchor="middle" font-size="10.5" fill="var(--ink)">tetón</text>
+            <text x="37" y="-8" text-anchor="middle" font-size="11" fill="var(--ink-3)">entrada</text>
+            <line x1="20" y1="192" x2="300" y2="192" stroke="var(--ink-2)" stroke-width="1"
+                  marker-start="url(#ar2)" marker-end="url(#ar)"/>
+            <text x="160" y="208" text-anchor="middle" fill="var(--ink)">giro 90° hasta el tope</text>
+            <text x="150" y="112" font-size="11" fill="var(--ink-3)">el techo baja 0,25 mm → aprieta</text>
+          </g>
+          <text x="420" y="26" font-family="Saira Condensed, sans-serif" font-size="13"
+                letter-spacing="1.6" fill="var(--ink-3)">SECCIÓN</text>
+          <g transform="translate(430,150)">
+            <rect x="0" y="-30" width="96" height="60" fill="var(--steel)" fill-opacity=".18"
+                  stroke="var(--steel)" stroke-width="1.4"/>
+            <text x="48" y="5" text-anchor="middle" font-size="11" fill="var(--ink-2)">MANGO</text>
+            <path d="M96,-21.5 L172,-21.5 L176,-17.5 L176,17.5 L172,21.5 L96,21.5 z"
+                  fill="var(--amber)" fill-opacity=".28" stroke="var(--amber)" stroke-width="1.5"/>
+            <path d="M196,-30 L272,-30 L272,30 L196,30 z" fill="none" stroke="var(--ink-2)" stroke-width="1.4"/>
+            <path d="M196,-23.5 L258,-23.5 L258,23.5 L196,23.5 z" fill="var(--bg)"
+                  stroke="var(--ink-3)" stroke-width="1" stroke-dasharray="4 3"/>
+            <rect x="228" y="-23.5" width="13" height="7" fill="var(--ink-3)"/>
+            <rect x="228" y="16.5" width="13" height="7" fill="var(--ink-3)"/>
+            <text x="234" y="-28" text-anchor="middle" font-size="10" fill="var(--ink-3)">tetones</text>
+            <line x1="96" y1="-46" x2="176" y2="-46" stroke="var(--ink-2)" stroke-width="1"
+                  marker-start="url(#ar2)" marker-end="url(#ar)"/>
+            <text x="136" y="-53" text-anchor="middle" fill="var(--ink)">13,0</text>
+            <line x1="182" y1="-21.5" x2="182" y2="21.5" stroke="var(--ink-2)" stroke-width="1"
+                  marker-start="url(#ar2)" marker-end="url(#ar)"/>
+            <text x="188" y="4" fill="var(--ink)">Ø8,6</text>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <ol class="steps">
+        <li><b>Imprime el <code>test_ajuste.stl</code> de la versión que elijas</b> — 5 minutos. Trae el
+          macho y la hembra sueltos, con la geometría exacta de las piezas reales.</li>
+        <li><b>Prueba el encaje.</b> En la v2 debe entrar hasta el fondo sin forzar y notarse el clic al
+          llegar al tope de los 90°.</li>
+        <li><b>Corrige una sola variable</b> (la columna «parámetro a calibrar» de la tabla de arriba).
+          Si va duro, súbela 0,05; si baila, bájala 0,05.</li>
+        <li><b>Repite el test</b> antes de lanzar los catorce cabezales. Cambiarlo después obliga a
+          reimprimirlos todos.</li>
+      </ol>
+      <p class="note" style="margin-top:16px">Los dos tetones van a ±90° del eje vertical, o sea
+        horizontales sobre la cama: ninguna de sus caras es un voladizo. Es la razón de que el cabezal
+        se imprima sin un solo soporte.</p>
+    </div>
+  </div>
+</section>
+
+<section id="catalogo">
+  <div class="sec-h"><span class="num">04</span><h2>Catálogo de cabezales</h2>
+    <p>Siete formas × dos anchos, iguales en las cinco versiones. Todos se imprimen con la cara de lijado sobre la cama.</p></div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Cabezal</th><th>Cara de lijado</th><th>Para qué</th><th>Envolvente</th>
+        <th>Volumen</th><th>Lija</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+  <p class="note" style="margin-top:16px">La cara útil es plana y sin relieve: pega la lija con cinta de
+    doble cara fina o con contacto en spray, y recórtala al ras con cúter. En los medios tubos, la lija
+    se enrolla y se sujeta metiendo los bordes en el canal, sin pegamento.</p>
+</section>
+
+<section id="impresion">
+  <div class="sec-h"><span class="num">05</span><h2>Cómo imprimirlo</h2>
+    <p>Todo cabe de sobra en los 180 × 180 × 180 mm de la A1 Mini y nada necesita soportes.</p></div>
+  <div class="split">
+    <div class="cards" style="grid-template-columns:1fr 1fr">
+      <div class="card">
+        <h3>Cabezales</h3>
+        <ul>
+          <li>Altura de capa <b>0,16 mm</b></li>
+          <li><b>4 perímetros</b>, 30 % relleno giroide</li>
+          <li>Sin soportes, sin balsa</li>
+          <li>PETG si vas a lijar en húmedo</li>
+        </ul>
+        <p style="font-size:13px;color:var(--ink-3)">Los catorce en una bandeja: 45–50 cm³ según la versión.</p>
+      </div>
+      <div class="card">
+        <h3>Mango</h3>
+        <ul>
+          <li>Capa <b>0,20 mm</b>, 4 perímetros, 20 %</li>
+          <li>Recto y ergonómico: <b>de pie con balsa</b></li>
+          <li>Doble: tumbado sobre su cara plana</li>
+          <li>Velocidad exterior ≤ 120 mm/s</li>
+        </ul>
+        <p style="font-size:13px;color:var(--ink-3)">La parte macho sale mejor arriba: el chaflán de
+          punta evita el «pie de elefante» en el encaje.</p>
+      </div>
+    </div>
+    <div>
+      <div class="eyebrow" style="margin-bottom:8px">Regenerar los STL</div>
+      <pre><b># una versión completa, calidad final</b>
+./render.sh v2
+
+<b># las cinco</b>
+./render.sh todas
+
+<b># una pieza suelta</b>
+openscad -o pala16_45.stl \
+  -D 'pieza="cabezal"' -D 'tipo="pala"' \
+  -D ancho=16 -D angulo=45 \
+  scad/sanding_stick_v2.scad</pre>
+      <p style="color:var(--ink-2);font-size:13.5px;margin-top:12px">Las cinco versiones comparten
+        esqueleto: cada archivo sólo define su junta (<code>junta_macho</code>,
+        <code>junta_hembra_neg</code>, <code>junta_hembra_pos</code>). Añadir una sexta unión es
+        escribir esos tres módulos en <code>_generar_versiones.py</code>.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>OpenSCAD paramétrico · <span class="mono">scad/sanding_stick_v[2-5].scad</span></span>
+  <span class="mono">5 versiones · 90 piezas · encaje macho/hembra verificado por volumen</span>
+</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+<script>/*__MESHES__*/</script>
+<script>
+(function(){
+"use strict";
+var VERS=[
+ {id:"v1", n:"v1", lab:"Hexágono a presión", roll:30,  mangos:["mango_recta","mango_ergonomica","mango_doble"]},
+ {id:"v2", n:"v2", lab:"Bayoneta 1/4 vuelta", roll:-90, mangos:["mango_recta"]},
+ {id:"v3", n:"v3", lab:"Rosca cuadrada Ø8", roll:0,   mangos:["mango_recta"]},
+ {id:"v4", n:"v4", lab:"Imán Ø6×3 + espiga en D", roll:0, mangos:["mango_recta"]},
+ {id:"v5", n:"v5", lab:"Clip elástico", roll:0, mangos:["mango_recta"]}
+];
+var MANGOS={
+ mango_recta:{lab:"Recto con ranuras",em:"Ø12×125",vol:14.2},
+ mango_ergonomica:{lab:"Ergonómico",em:"Ø11–14",vol:15.2},
+ mango_doble:{lab:"Doble, tumbado",em:"149×12×9",vol:11.9}
+};
+var CAB={
+ cabezal_pala_16_0:{lab:"Pala plana 16",em:"0°",dim:[56,16,11.5],vol:4.30,cara:"16 × 40 plana",
+   uso:"Caras grandes, líneas de capa, planos largos",lija:"P180–P400",ang:0,anc:16},
+ cabezal_pala_16_45:{lab:"Pala 45° 16",em:"45°",dim:[33.7,16,20.5],vol:3.09,cara:"16 × 25 a 45°",
+   uso:"Chaflanes, aristas vivas, romper cantos",lija:"P240–P600",ang:45,anc:16},
+ cabezal_pala_16_90:{lab:"Taco 90° 16",em:"90°",dim:[16,16,23],vol:3.10,cara:"16 × 16 a 90°",
+   uso:"Fondos y rincones: se lija empujando, no arrastrando",lija:"P240–P800",ang:90,anc:16},
+ cabezal_pala_8_0:{lab:"Pala plana 8",em:"0°",dim:[56,12,11.5],vol:2.75,cara:"8 × 40 plana",
+   uso:"Ranuras estrechas y detalle entre relieves",lija:"P240–P600",ang:0,anc:8},
+ cabezal_pala_8_45:{lab:"Pala 45° 8",em:"45°",dim:[33.7,12,20.5],vol:2.21,cara:"8 × 25 a 45°",
+   uso:"Biselar filigranas sin tocar la pieza de al lado",lija:"P400–P800",ang:45,anc:8},
+ cabezal_pala_8_90:{lab:"Taco 90° 8",em:"90°",dim:[16,12,22],vol:2.29,cara:"8 × 16 a 90°",
+   uso:"Cajeados pequeños y fondos ciegos",lija:"P400–P800",ang:90,anc:8},
+ cabezal_triangulo_16:{lab:"Triángulo 16",em:"punta",dim:[43.7,15.5,11.5],vol:2.64,cara:"punta 30 mm",
+   uso:"Esquinas interiores y vértices en V",lija:"P240–P600",ang:0,anc:16},
+ cabezal_triangulo_8:{lab:"Triángulo 8",em:"punta",dim:[34.3,12,11.5],vol:2.15,cara:"punta 22 mm",
+   uso:"Calados de marquetería y ángulos cerrados",lija:"P400–P800",ang:0,anc:8},
+ cabezal_prisma_tri_16:{lab:"Prisma 3 caras 16",em:"3×",dim:[56,16,13.9],vol:5.95,cara:"3 caras de 16",
+   uso:"Ranuras en V; tres caras útiles en un cabezal",lija:"P180–P400",ang:0,anc:16},
+ cabezal_prisma_tri_8:{lab:"Prisma 3 caras 8",em:"3×",dim:[56,12,11.5],vol:2.76,cara:"3 caras de 8",
+   uso:"Nervios y molduras finas en madera",lija:"P400–P800",ang:0,anc:8},
+ cabezal_medio_tubo_convexo_16:{lab:"Media caña 16",em:"conv.",dim:[56,16,11.5],vol:5.52,cara:"R8 convexa",
+   uso:"Interiores curvos, gargantas y molduras cóncavas",lija:"P240–P600",ang:0,anc:16},
+ cabezal_medio_tubo_convexo_8:{lab:"Media caña 8",em:"conv.",dim:[56,12,11.5],vol:2.64,cara:"R4 convexa",
+   uso:"Radios pequeños y agujeros de Ø10 en adelante",lija:"P400–P800",ang:0,anc:8},
+ cabezal_medio_tubo_concavo_16:{lab:"Canal 16",em:"cónc.",dim:[56,16,11.5],vol:4.87,cara:"canal Ø12",
+   uso:"Varillas, barrotes y cantos redondeados",lija:"P240–P600",ang:0,anc:16},
+ cabezal_medio_tubo_concavo_8:{lab:"Canal 8",em:"cónc.",dim:[56,12,11.5],vol:2.74,cara:"canal Ø5",
+   uso:"Hilos, alambres y detalles torneados finos",lija:"P400–P800",ang:0,anc:8},
+ test_ajuste:{lab:"Pieza de calibración",em:"test",dim:[38,12,20],vol:2.60,cara:"—",
+   uso:"Macho y hembra sueltos para probar el ajuste",lija:"—",ang:0,anc:16}
+};
+var ORDER_C=["cabezal_pala_16_0","cabezal_pala_16_45","cabezal_pala_16_90","cabezal_pala_8_0",
+  "cabezal_pala_8_45","cabezal_pala_8_90","cabezal_triangulo_16","cabezal_triangulo_8",
+  "cabezal_prisma_tri_16","cabezal_prisma_tri_8","cabezal_medio_tubo_convexo_16",
+  "cabezal_medio_tubo_convexo_8","cabezal_medio_tubo_concavo_16","cabezal_medio_tubo_concavo_8",
+  "test_ajuste"];
+var ORDER_M=["mango_recta","mango_ergonomica","mango_doble"];
+
+/* ---------- tabla del catálogo ---------- */
+var tb=document.getElementById("tbody");
+ORDER_C.slice(0,14).forEach(function(k){
+  var p=CAB[k],tr=document.createElement("tr");
+  tr.innerHTML='<td class="name">'+p.lab+'</td><td>'+p.cara+'</td><td style="color:var(--ink-2)">'+p.uso+
+    '</td><td class="n">'+p.dim[0].toFixed(1)+' × '+p.dim[1].toFixed(1)+' × '+p.dim[2].toFixed(1)+
+    '</td><td class="n">'+p.vol.toFixed(2)+' cm³</td><td class="grit">'+p.lija+'</td>';
+  tr.style.cursor="pointer"; tr.addEventListener("click",function(){select(k);});
+  tb.appendChild(tr);
+});
+
+/* ---------- mallas ---------- */
+function build(rec){
+  var bin=Uint8Array.from(atob(rec.d),function(c){return c.charCodeAt(0);});
+  var raw=pako.inflate(bin), nv=rec.nv, nf=rec.nf;
+  var qb=raw.slice(0,nv*6), ib=raw.slice(nv*6,nv*6+nf*12);
+  var q=new Uint16Array(qb.buffer,qb.byteOffset,nv*3);
+  var idx=new Uint32Array(ib.buffer,ib.byteOffset,nf*3);
+  var pos=new Float32Array(nv*3);
+  for(var i=0;i<nv;i++)for(var k=0;k<3;k++)pos[i*3+k]=rec.lo[k]+q[i*3+k]/65535*rec.rng[k];
+  var g=new THREE.BufferGeometry();
+  g.setAttribute("position",new THREE.BufferAttribute(pos,3));
+  g.setIndex(new THREE.BufferAttribute(idx,1));
+  g.computeVertexNormals();
+  return g;
+}
+var GEO={};
+function geo(n){ if(!GEO[n])GEO[n]=build(MESHES[n]); return GEO[n]; }
+function key(v,p){ return v+"_"+p; }
+function has(v,p){ return !!MESHES[key(v,p)]; }
+
+/* ---------- escena ---------- */
+var cv=document.getElementById("cv"),stage=cv.parentNode;
+var ren=new THREE.WebGLRenderer({canvas:cv,antialias:true});
+ren.setPixelRatio(Math.min(devicePixelRatio||1,2));
+var scene=new THREE.Scene();
+var cam=new THREE.PerspectiveCamera(34,1,1,3000);
+var world=new THREE.Group(); world.rotation.x=-Math.PI/2; scene.add(world);
+scene.add(new THREE.HemisphereLight(0xffffff,0x36404d,.85));
+var key1=new THREE.DirectionalLight(0xffffff,.75); key1.position.set(90,140,120); scene.add(key1);
+var fill=new THREE.DirectionalLight(0xffffff,.32); fill.position.set(-120,60,-90); scene.add(fill);
+
+var matHead=new THREE.MeshStandardMaterial({color:0xd7a233,roughness:.62,metalness:.06});
+var matGrip=new THREE.MeshStandardMaterial({color:0x53759f,roughness:.66,metalness:.06});
+var lineMat=new THREE.LineBasicMaterial({color:0x1b1e23,transparent:true,opacity:.26});
+
+var bed=new THREE.Group(); world.add(bed); var gridMat=null;
+(function(){
+  var g=new THREE.GridHelper(180,18); g.rotation.x=Math.PI/2;
+  gridMat=g.material; gridMat.vertexColors=false; gridMat.transparent=true; gridMat.opacity=.55;
+  var o=new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(-90,-90,0),new THREE.Vector3(90,-90,0),new THREE.Vector3(90,90,0),
+    new THREE.Vector3(-90,90,0),new THREE.Vector3(-90,-90,0)]);
+  bed.add(g); bed.add(new THREE.Line(o,new THREE.LineBasicMaterial({color:0xc98a06,transparent:true,opacity:.75})));
+})();
+
+var gHead=new THREE.Group(),gGrip=new THREE.Group();
+world.add(gHead); world.add(gGrip);
+var cur={ver:"v2",grip:"mango_recta",head:"cabezal_pala_16_0"};
+var montado=true,showBed=true,showEdges=true,explode=0;
+
+function meshOf(name,mat,grp){
+  while(grp.children.length)grp.remove(grp.children[0]);
+  var m=new THREE.Mesh(geo(name),mat); grp.add(m);
+  var e=new THREE.LineSegments(new THREE.EdgesGeometry(geo(name),26),lineMat);
+  e.visible=showEdges; grp.add(e);
+}
+function verInfo(){ for(var i=0;i<VERS.length;i++) if(VERS[i].id===cur.ver) return VERS[i]; }
+function place(){
+  var p=CAB[cur.head],a=p.ang||0,anc=p.anc||16,esp=anc<=10?3:4;
+  var Pz=(a===90)?(esp+3):5.5;
+  var dx=-Math.cos(a*Math.PI/180),dz=Math.sin(a*Math.PI/180);
+  var L=16,ML=125,off=explode*0.45;
+  gGrip.visible=montado;
+  if(!montado)return;
+  var m=new THREE.Matrix4();
+  m.multiply(new THREE.Matrix4().makeTranslation((L+off)*dx,0,Pz+(L+off)*dz));
+  m.multiply(new THREE.Matrix4().makeRotationY((90+a)*Math.PI/180));
+  m.multiply(new THREE.Matrix4().makeRotationZ(verInfo().roll*Math.PI/180));
+  m.multiply(new THREE.Matrix4().makeTranslation(0,0,-ML));
+  gGrip.matrixAutoUpdate=false; gGrip.matrix.copy(m); gGrip.updateMatrixWorld(true);
+}
+var ro=document.getElementById("readout");
+function readout(){
+  var h=CAB[cur.head],g=MANGOS[cur.grip],v=verInfo();
+  var rows=[["Versión",v.n+" · "+v.lab],["Cabezal",h.lab],
+    ["Envolvente",h.dim[0].toFixed(1)+"×"+h.dim[1].toFixed(1)+"×"+h.dim[2].toFixed(1)+" mm"],
+    ["Volumen",h.vol.toFixed(2)+" cm³"],["Mango",g.lab],
+    ["Conjunto",(h.vol+g.vol).toFixed(2)+" cm³"]];
+  ro.innerHTML=rows.map(function(r){return "<dt>"+r[0]+"</dt><dd>"+r[1]+"</dd>";}).join("");
+}
+function sync(){
+  document.querySelectorAll(".pbtn").forEach(function(b){
+    var k=b.dataset.k, mango=b.dataset.g==="m";
+    var ok=has(cur.ver,k);
+    b.disabled=!ok;
+    b.title=ok?"":"Sólo mallado en la v1 — el modelo existe en todas las versiones";
+    b.setAttribute("aria-current",String(ok&&(mango?k===cur.grip:k===cur.head)));
+  });
+  document.querySelectorAll(".vbtn").forEach(function(b){
+    b.setAttribute("aria-pressed",String(b.dataset.v===cur.ver));});
+  var v=verInfo();
+  document.getElementById("vname").innerHTML="<b>"+v.n+"</b> · "+v.lab;
+}
+function select(name){
+  if(MANGOS[name]){ if(!has(cur.ver,name))return; cur.grip=name; meshOf(key(cur.ver,name),matGrip,gGrip); }
+  else { cur.head=name; meshOf(key(cur.ver,name),matHead,gHead); }
+  sync(); place(); readout(); frame();
+}
+function setVer(v){
+  cur.ver=v;
+  if(!has(v,cur.grip)) cur.grip="mango_recta";
+  meshOf(key(v,cur.grip),matGrip,gGrip);
+  meshOf(key(v,cur.head),matHead,gHead);
+  sync(); place(); readout(); frame();
+}
+(function lists(){
+  var vw=document.getElementById("vers");
+  VERS.forEach(function(v){
+    var b=document.createElement("button"); b.className="vbtn"; b.type="button"; b.dataset.v=v.id;
+    b.textContent=v.n; b.title=v.lab;
+    b.addEventListener("click",function(){setVer(v.id);}); vw.appendChild(b);
+  });
+  function mk(el,keys,grp,src){
+    keys.forEach(function(k){
+      var b=document.createElement("button");
+      b.className="pbtn"; b.dataset.k=k; b.dataset.g=grp; b.type="button";
+      b.innerHTML="<span>"+src[k].lab+"</span><em>"+src[k].em+"</em>";
+      b.addEventListener("click",function(){select(k);});
+      el.appendChild(b);
+    });
+  }
+  mk(document.getElementById("listMangos"),ORDER_M,"m",MANGOS);
+  mk(document.getElementById("listCabezales"),ORDER_C,"c",CAB);
+})();
+
+/* ---------- órbita ---------- */
+var tgt=new THREE.Vector3(0,10,0),th=-.72,ph=1.16,rad=190,drag=null;
+function apply(){
+  ph=Math.max(.12,Math.min(Math.PI-.12,ph));
+  cam.position.set(tgt.x+rad*Math.sin(ph)*Math.sin(th),tgt.y+rad*Math.cos(ph),
+                   tgt.z+rad*Math.sin(ph)*Math.cos(th));
+  cam.lookAt(tgt);
+}
+cv.addEventListener("pointerdown",function(e){drag={x:e.clientX,y:e.clientY};cv.setPointerCapture(e.pointerId);});
+cv.addEventListener("pointermove",function(e){
+  if(!drag)return; th-=(e.clientX-drag.x)*.0075; ph-=(e.clientY-drag.y)*.0075;
+  drag={x:e.clientX,y:e.clientY}; apply();});
+cv.addEventListener("pointerup",function(e){drag=null;cv.releasePointerCapture(e.pointerId);});
+cv.addEventListener("pointercancel",function(){drag=null;});
+cv.addEventListener("wheel",function(e){e.preventDefault();
+  rad=Math.max(45,Math.min(520,rad*(1+(e.deltaY>0?.12:-.12)))); apply();},{passive:false});
+
+function frame(){
+  var box=new THREE.Box3();
+  box.expandByObject(gHead); if(montado)box.expandByObject(gGrip);
+  var c=box.getCenter(new THREE.Vector3()),s=box.getSize(new THREE.Vector3());
+  tgt.copy(c); rad=Math.max(s.x,s.y,s.z)*1.35+40; apply();
+}
+function resize(){
+  var w=stage.clientWidth,h=stage.clientHeight;
+  if(!w||!h)return; ren.setSize(w,h,false); cam.aspect=w/h; cam.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(stage);
+
+function theme(){
+  var dark=document.documentElement.dataset.theme==="dark"||
+    (document.documentElement.dataset.theme!=="light"&&matchMedia("(prefers-color-scheme:dark)").matches);
+  ren.setClearColor(dark?0x12151a:0xdfe3e8,1);
+  lineMat.color.setHex(dark?0xe8ecf0:0x1b1e23); lineMat.opacity=dark?.2:.26;
+  gridMat.color.setHex(dark?0x39424d:0xaeb7c0); gridMat.opacity=dark?.85:.7;
+}
+matchMedia("(prefers-color-scheme:dark)").addEventListener("change",theme);
+new MutationObserver(theme).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+
+function chip(id,get,set){
+  var b=document.getElementById(id);
+  b.addEventListener("click",function(){set(!get());b.setAttribute("aria-pressed",String(get()));});
+}
+chip("tMontado",function(){return montado;},function(v){montado=v;place();frame();});
+chip("tCama",function(){return showBed;},function(v){showBed=v;bed.visible=v;});
+chip("tAristas",function(){return showEdges;},function(v){showEdges=v;
+  gHead.children.forEach(function(o){if(o.isLineSegments)o.visible=v;});
+  gGrip.children.forEach(function(o){if(o.isLineSegments)o.visible=v;});});
+document.getElementById("expl").addEventListener("input",function(e){
+  explode=+e.target.value; if(!montado){montado=true;
+    document.getElementById("tMontado").setAttribute("aria-pressed","true");} place();});
+document.querySelectorAll("[data-go]").forEach(function(b){
+  b.addEventListener("click",function(){setVer(b.dataset.go);
+    document.querySelector(".viewer").scrollIntoView({behavior:"smooth",block:"center"});});
+});
+
+setVer("v2"); theme(); resize();
+(function loop(){requestAnimationFrame(loop);ren.render(scene,cam);})();
+})();
+</script>

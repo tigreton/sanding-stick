@@ -1,0 +1,23 @@
+# Salidas regenerables: se reconstruyen con ./render.sh
+preview_stl/
+png/
+
+# Los STL de calidad final, salvo las piezas de calibración, que sí van versionadas
+stl/*/
+!stl/v1/
+!stl/v2/
+!stl/v3/
+!stl/v4/
+!stl/v5/
+stl/v*/*
+!stl/v*/test_ajuste.stl
+
+# Empaquetados
+*.zip
+
+# Basura del sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+*.bak
+*~
