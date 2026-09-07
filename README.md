@@ -39,9 +39,9 @@ sanding_stick/
 ├── preview_stl/v1..v5/           18 piezas por versión, calidad de trabajo
 ├── png/                          renders de cada pieza
 ├── web/                          plantilla del visor y mallas empaquetadas
-└── CHANGELOG.md · FUENTES.md · README.md · LICENSE
-
-sanding_stick_v1.0.zip            instantánea congelada de la v1 (fuera de la carpeta)
+├── sanding_stick_v1.0.zip        instantánea congelada de la v1
+├── sanding_stick_v1-v5.zip       instantánea de las cinco versiones
+└── CHANGELOG.md · FUENTES.md · PUBLICAR.md · README.md · LICENSE
 ```
 
 `preview_stl/` y `png/` no van al repositorio: se regeneran con `./render.sh`.
