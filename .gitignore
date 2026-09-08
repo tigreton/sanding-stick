@@ -2,6 +2,9 @@
 preview_stl/
 png/
 
+# Kit de test rápido: se reconstruye con ./test_rapido.sh
+stl_test/
+
 # Los STL de calidad final, salvo las piezas de calibración, que sí van versionadas
 stl/*/
 !stl/v1/

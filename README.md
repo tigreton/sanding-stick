@@ -34,6 +34,8 @@ sanding_stick/
 │   ├── sanding_stick_v5.scad     v5 · clip elástico
 │   └── _generar_versiones.py     genera v2–v5 desde un esqueleto común
 ├── render.sh                     genera los STL de una versión o de todas
+├── test_rapido.sh                genera el kit de test mínimo → stl_test/
+├── TEST_RAPIDO.md                qué imprimir para elegir enganche y formas
 ├── visor_lijador.html            visor 3D interactivo con las 5 versiones
 ├── stl/                          STL a calidad final
 ├── preview_stl/v1..v5/           18 piezas por versión, calidad de trabajo
@@ -144,6 +146,11 @@ ciclos.
 *Calibrar:* `snap_pest` (0,6). Si cuesta meterlo, baja a 0,5; si se suelta, sube a 0,7.
 
 ## 4. Calibra antes de imprimir el juego
+
+**Si aún no sabes qué versión quieres, empieza por el kit de test rápido**
+(`TEST_RAPIDO.md` · `stl_test/`): los cinco enganches y las siete formas
+recortados a lo mínimo, para probarlos todos en un rato en vez de imprimir 45 cm³
+a ciegas. La geometría de unión es la misma que la de las piezas reales.
 
 1. Imprime el `test_ajuste.stl` **de la versión que hayas elegido** (5 min). Trae el
    macho y la hembra sueltos, con la geometría exacta de las piezas reales.

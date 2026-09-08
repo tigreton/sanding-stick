@@ -5,6 +5,20 @@ impresión. Lo único que cambia es la unión entre mango y cabezal.
 
 ---
 
+## Kit de test rápido · 8 de septiembre de 2026
+
+Añadidos `test_rapido.sh`, `TEST_RAPIDO.md` y la carpeta `stl_test/` (24 piezas,
+68 cm³ en total, repartidas en tres pasos de ~1 h cada uno). No cambia ninguna
+pieza del modelo: es el mismo `.scad` con `mango_largo=30`, `largo_pala=18` y
+`largo_barra=18`, para probar los cinco enganches y las siete formas sin imprimir
+el juego entero.
+
+La geometría de unión no se toca. Comprobado con `pieza="interferencia"` sobre el
+mango corto de la v2: 0,11 mm³ de solape, el aprieto de diseño de la bayoneta.
+Las 24 mallas son estancas (0 aristas de borde, 0 no-manifold).
+
+---
+
 ## v1.0 — Hexágono a presión · 7 de septiembre de 2026
 
 Primera versión completa. **Congelada** en `sanding_stick_v1.0.zip`.
