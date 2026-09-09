@@ -17,7 +17,7 @@ Formas, anchos, mangos y orientación de impresión son idénticos en las diez.
 | **v7** | Cono autoblocante de 12° | empujar y tirar | sí, por rozamiento | no |
 | **v8** | Espiga y cuña transversal | meter y empujar la cuña | **sí, y regulable** | no |
 | **v9** | Pinza cónica de cuatro dedos | meter y empujar el casquillo | **sí, y regulable** | no |
-| **v10** | Doble espiga con clic | empujar hasta el clic | sí, hasta cierta fuerza | no |
+| **v10** | Doble espiga con clic | empujar hasta el clic | sí, pero espigas frágiles | no |
 
 **Si sólo vas a imprimir una: la v2.** Es la única *probada* que combina cambio
 rápido con bloqueo axial real, y no depende de comprar nada ni de que un brazo
@@ -41,10 +41,13 @@ recorrido por delante. A cambio es la que más debilita el cabezal.
 La v9 hace lo mismo que la v8 sin pieza que se pueda perder, pero es la más
 voluminosa y la que más pieza tiene que imprimir.
 
-**Si tu impresora va justa: la v10.** Dos postes redondos y dos agujeros
-redondos, que es lo que mejor le sale a una FDM. Ni hélices, ni destalonados, ni
-paredes finas. Y es la que más superficie de apoyo tiene contra el hombro, que
-es lo que de verdad impide que el cabezal bascule (ver la tabla del apartado 2).
+**La v10 es la que más superficie de apoyo tiene contra el hombro** —53,5 mm²,
+que es lo que de verdad impide que el cabezal bascule— y la que menos exige a la
+impresora: dos postes redondos y dos agujeros redondos. Pero **sus espigas son
+frágiles**: se han roto dos veces durante la puesta a punto y aguantan 2,4 kg de
+fuerza lateral contra los 8,8 de un vástago normal. La v6 da el 90 % de esa
+corona con una parte macho maciza, así que para casi todo el mundo es mejor
+opción.
 
 Las v6 a v10 son nuevas y todavía no han pasado por la cama: empieza por su
 `test_ajuste`.
@@ -106,7 +109,7 @@ plano de la boca y recortado a lo que alcanza el hombro:
 
 | | Corona | |
 |---|---:|---|
-| **v10** doble espiga | **51,6 mm²** | dos taladros de Ø3,55 en vez de uno de Ø8,6 |
+| **v10** doble espiga | **53,5 mm²** | dos taladros de Ø4,15 en vez de uno de Ø8,6 |
 | **v6** cola de milano | **48,4 mm²** | la ranura ocupa poco del plano de la boca |
 | v1 hexágono | 25,5 mm² | |
 | v5 clip | 13,4 mm² | los dos planos dejan material cerca del eje |
@@ -143,7 +146,7 @@ Hace dos cosas, y sólo una de ellas es un regalo:
 | **v2 con falda** | **30,5 mm²** | **420 mm⁴** — 19 veces más |
 | v6 sin falda | 48,5 mm² | 434 mm⁴ |
 | v6 con falda | 27,2 mm² | 367 mm⁴ — un 15 % menos |
-| v10 sin falda | 51,6 mm² | 415 mm⁴ |
+| v10 sin falda | 53,5 mm² | 415 mm⁴ |
 | v10 con falda | 27,2 mm² | 367 mm⁴ — un 12 % menos |
 
 Es decir: **rescate para la v2 a v5, y ligera pérdida para la v6 y la v10.** La
@@ -460,14 +463,28 @@ vástago con el casquillo suelto; el resto lo pone el pulgar.
 
 ### v10 · Doble espiga con clic — `scad/sanding_stick_v10.scad`
 
-> **La 10.0 se rompía.** Las espigas iban partidas en dos brazos y se partieron
-> al primer montaje a mano. La ficha decía 0,56 % de deformación y era falso: el
-> número real era 1,37 %, y además en tracción **entre capas**. Lo que sigue es
-> la 10.1, con las espigas macizas y lo que flexa mudado al cabezal. El porqué
-> completo está en el CHANGELOG.
+> **Esta unión se ha roto dos veces al imprimirla.** La 10.0 partía los brazos
+> de las espigas al primer montaje; la 10.1, con las espigas ya macizas, partió
+> una por la base al despegarla de la cama. Lo que sigue es la **10.2**. Sigue
+> siendo, con diferencia, **la unión más frágil de las diez**: su espiga se parte
+> con 2,4 kg de fuerza lateral en la punta, contra los 8,8 de un vástago Ø8,6.
+> Elígela por su corona de apoyo, no por su resistencia. El historial completo
+> está en el CHANGELOG.
 
-Dos espigas **macizas** de Ø3,4 separadas 5,4 mm, con una garganta, y en el
-cabezal dos lengüetas flexibles con la pestaña. Es la unión que **reparte el
+Dos espigas **macizas** de Ø4,0 separadas 5,6 mm, con **raíz cónica** y una
+garganta, y en el cabezal dos lengüetas flexibles con la pestaña.
+
+**La raíz va cónica —Ø4,4 en el arranque, Ø4,0 a los 1,5 mm— y no es estética.**
+Un ángulo vivo en el arranque multiplica por ~1,8 la tensión justo donde el
+momento es máximo, que es exactamente por donde rompió la 10.1. El acuerdo
+cóncavo de toda la vida no cabía: dos de R1,2 separados 5,6 mm se tocan entre sí
+y se salen del hombro, y el rebaje que el cabezal necesitaría para librarlos se
+comería la corona entera. La raíz cónica hace el mismo trabajo y el taladro del
+cabezal la copia sin rebaje ninguno.
+
+**El techo del concepto, por escrito:** con el cuerpo en Ø12, para que al cabezal
+le queden 1,1 mm de pared por fuera de cada taladro y 1,45 de alma entre los dos,
+la espiga no puede pasar de **Ø4,0**. Ahí se acaba lo que se puede reforzar. Es la unión que **reparte el
 trabajo**: las espigas orientan y aguantan el par y el cortante, las lengüetas
 sólo retienen, y quien impide que el cabezal bascule no es ninguna de las dos
 cosas sino el hombro.
@@ -491,7 +508,7 @@ Es la lección que costó la 10.0, y vale para cualquier unión que se añada.
 
 Y flexa poquísimo: la pestaña sobresale 0,18 dentro de un taladro que ya es
 0,075 más ancho que la espiga, así que **lo que la lengüeta abre son 0,105 mm**.
-Con 1,5 de pared, 3,0 de ancho y 7,0 de voladizo eso es **0,49 %**.
+Con 1,1 de pared, 3,0 de ancho y 5,1 de voladizo eso es **0,67 %**.
 
 Ese mismo 0,105 es el escalón que retiene. Como la retención sale del *ángulo*
 del canto y no de su profundidad, el canto de arriba de la garganta es corto a
@@ -503,17 +520,20 @@ Las espigas van separadas en el eje que en el cabezal impreso es el
 apoya en la cama. Se pierde algo de par de fuerzas contra la presión de lijado,
 pero quien se come ese momento es la corona.
 
-*Juego de giro:* vale holgura ÷ (separación ÷ 2) = 0,075/2,7 = **1,6°**. Bajar
+*Juego de giro:* vale holgura ÷ (separación ÷ 2) = 0,075/2,8 = **1,5°**. Bajar
 `esp2_holgura` a 0,05 lo deja en 1,1°, a cambio de un ajuste más exigente.
 
-**Lo que cuesta:** las espigas son esbeltas — mientras el cabezal apoye en el
-hombro da igual, porque la corona se come el momento, pero si alguien hace
-palanca de verdad con la pala, Ø3,4 es lo que hay. Y el cabezal lleva cuatro
+**Lo que cuesta, y es mucho:** es la unión más frágil de las diez. La espiga se
+parte con **2,4 kg** de fuerza lateral en la punta — cinco veces más que la 10.1,
+pero un vástago Ø8,6 aguanta 8,8. Trátala con cuidado al despegarla de la cama y
+no la elijas si vas a hacer palanca con la pala. Y el cabezal lleva cuatro
 ranuras abiertas en los costados por las que entrará polvo.
 
 *Calibrar:* `esp2_gar_sube` (0,15), que es lo que gradúa cuánto retiene: a 0,08
 cuesta mucho sacarlo, a 0,30 sale solo. `esp2_pest` (0,18) sólo si el clic no se
-nota — y sube de 0,105 mm de recorrido de lengüeta por cada 0,10 que le añadas.
+nota — y sube 0,10 mm de recorrido de lengüeta por cada 0,10 que le añadas.
+`esp2_largo` (9) y `esp2_d_raiz` (4,4) son los que deciden si la espiga aguanta:
+no los bajes.
 
 ## 4. Calibra antes de imprimir el juego
 

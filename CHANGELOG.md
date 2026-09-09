@@ -5,6 +5,61 @@ impresión. Lo único que cambia es la unión entre mango y cabezal.
 
 ---
 
+## v10.4 — La v10 se rompió otra vez, ahora por la base · 10 de septiembre de 2026
+
+Segunda rotura, y por sitio distinto: con las espigas ya macizas, **una se partió
+por la base al despegar la pieza de la cama**.
+
+### El número
+
+La raíz de una espiga es un voladizo vertical en una pieza impresa de pie, así
+que trabaja **entre capas** (~30 MPa). Con Ø3,4, 12 mm de largo y llegando al
+hombro en **ángulo vivo** —un concentrador de ~1,8—:
+
+```
+2 × Ø3,4 × 12, ángulo vivo (v10.1)     W = 3,86 mm³    rompe a  5,4 N  (0,5 kg)
+2 × Ø4,4 raíz cónica × 9   (v10.2)     W = 8,36 mm³    rompe a 23,2 N  (2,4 kg)
+un vástago Ø8,6 × 12 (v2, v6, v8…)     W = 62,4 mm³    rompe a 86,7 N  (8,8 kg)
+```
+
+Medio kilo de fuerza lateral en la punta. Eso no es una unión floja: es una pieza
+que no se puede ni manipular. Y no lo vi porque en la 10.1 miré la lengüeta, que
+era lo que había roto la vez anterior, y no volví a mirar la espiga.
+
+### Los tres cambios, todos a la misma ecuación
+
+La tensión en la raíz vale M/W, así que sólo hay tres palancas y se han movido
+las tres: **Ø3,4 → Ø4,0** (W ×1,6), **12 → 9 mm de largo** (momento ×0,75) y
+**raíz cónica de Ø4,4 en 1,5 mm** en vez de ángulo vivo (Kt de 1,8 a 1,2).
+Juntas, de 0,5 a 2,4 kg.
+
+**El acuerdo cóncavo de toda la vida no cabía.** Dos de R1,2 separados 5,6 mm se
+tocan entre sí y se salen del hombro, y el rebaje que el cabezal necesitaría para
+librarlos se comería la corona de apoyo entera — que es la única razón por la que
+esta unión existe. La raíz cónica hace el mismo trabajo y el taladro del cabezal
+la copia sin rebaje ninguno: sale gratis.
+
+### El techo del concepto, por escrito
+
+Con el cuerpo en Ø12, para que al cabezal le queden 1,1 mm de pared por fuera de
+cada taladro y 1,45 de alma entre los dos, hace falta que separación ≥ Ø + 1,65 y
+que separación + Ø ≤ 9,7. **La espiga no puede pasar de Ø4,0.** Ahí se acaba lo
+que se puede reforzar sin cambiar de idea.
+
+Así que la v10 se queda como la unión más frágil de las diez por un factor de
+casi cuatro, y eso pasa al README y a la tabla de portada. Sigue teniendo la
+mayor corona de apoyo —**53,5 mm²**, ha subido al separarse más las espigas— pero
+la v6 da el 90 % de esa cifra con una parte macho maciza. Para casi todo el
+mundo, la v6 es mejor opción.
+
+Verificado: interferencia 0,0000 mm³; raíz medida sobre la malla Ø4,387 → Ø4,000
+en 1,6 mm; garganta a Ø3,520; pared del cabezal 1,08–1,11 y alma 1,41; lengüetas
+libres y boca entera comprobadas por sondeo; corona 53,46 mm². La lengüeta baja a
+1,1 de pared, así que trabaja al 0,67 % en vez del 0,49 %, y sigue holgada porque
+es tracción dentro de la capa.
+
+---
+
 ## v10.3 — La v10 se rompió al imprimirla · 9 de septiembre de 2026
 
 Jorge imprimió la v10.0. **Al apretarla mínimamente con las manos se partieron

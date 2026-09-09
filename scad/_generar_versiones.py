@@ -1221,6 +1221,30 @@ V10_HEAD = r'''// ==============================================================
 //  SANDING STICK 2ESPIGAS — v10 · unión de DOBLE ESPIGA con clic
 //  Versión 10.1 · 9 de septiembre de 2026 · Jorge (con Claude) · OpenSCAD 2021.01+
 //
+//  v10.2 — LA 10.1 TAMBIÉN SE ROMPIÓ, y por otro sitio: una espiga se partió
+//  por la BASE al despegar la pieza de la cama. Las espigas macizas de Ø3,4
+//  eran voladizos verticales de 12 mm que llegaban al hombro en ángulo vivo, y
+//  con la raíz trabajando entre capas eso son 0,5 kg de fuerza lateral en la
+//  punta. Un vástago Ø8,6 de las otras versiones aguanta 8,8.
+//
+//  Tres cambios, y los tres van al mismo sitio — la tensión en la raíz, que
+//  vale M/W y crece con el largo y con el ángulo vivo:
+//    · Ø3,4 → Ø4,0, el máximo que deja la geometría (ver abajo): W ×1,6
+//    · 12 → 9 mm de largo: momento ×0,75
+//    · RAÍZ CÓNICA de Ø4,4 en 1,5 mm en vez de ángulo vivo: mata el
+//      concentrador (Kt de 1,8 a 1,2) y engorda la sección justo donde rompe
+//  Juntos: de 0,5 a 2,4 kg. Cinco veces, y sigue siendo la unión más frágil de
+//  las diez — eso hay que saberlo al elegirla.
+//
+//  El acuerdo cóncavo de toda la vida NO CABÍA: dos de R1,2 separados 5,6 mm se
+//  tocan entre sí y se salen del hombro, y el rebaje que el cabezal necesitaría
+//  para librarlos se comería la corona de apoyo entera. La raíz cónica hace el
+//  mismo trabajo y el taladro del cabezal la copia sin rebaje ninguno.
+//
+//  EL TECHO DEL CONCEPTO, para que quede escrito: con el cuerpo en Ø12, para
+//  que al cabezal le queden 1,1 mm de pared por fuera de cada taladro y 1,45 de
+//  alma entre los dos, la espiga no puede pasar de Ø4,0. No hay más margen.
+//
 //  v10.1 — LA 10.0 SE ROMPÍA. Las espigas iban partidas en dos brazos cada una
 //  y al primer montaje a mano se partieron. La ficha decía 0,56 % de
 //  deformación y era falso por dos motivos: se tomó como voladizo la ranura
@@ -1266,14 +1290,19 @@ V10_HEAD = r'''// ==============================================================
 
 V10_PARAMS = r'''
 /* [Doble espiga — la unión de la v10] */
-esp2_d        = 3.4;    // Ø de cada espiga. MACIZA: en la 10.0 iba partida en
-                        // dos brazos de 2,86 mm² y se rompieron al primer montaje
-esp2_sep      = 5.4;    // separación entre ejes. Cuanto mayor, menos juego
-                        // angular (vale holgura/(sep/2))
-esp2_largo    = 12;     // longitud de las espigas
+esp2_d        = 4.0;    // Ø de cada espiga. MACIZA, y es el máximo que cabe:
+                        // subirlo deja al cabezal sin pared o sin alma
+esp2_d_raiz   = 4.4;    // Ø en el arranque. La raíz va cónica para que no haya
+                        // ángulo vivo donde el momento es máximo
+esp2_raiz_h   = 1.5;    // altura de esa transición
+esp2_sep      = 5.6;    // separación entre ejes. Cuanto mayor, menos juego
+                        // angular (vale holgura/(sep/2)) y menos alma le queda
+                        // al cabezal entre los dos taladros
+esp2_largo    = 9;      // longitud de las espigas. Cada milímetro de más es
+                        // momento de más en la raíz, que es por donde rompen
 esp2_holgura  = 0.075;  // holgura radial del taladro. Con 0,075 el juego de giro
                         // es de 1,6°; bajarla a 0,05 lo deja en 1,1°
-esp2_gar_z    = 8.4;    // dónde empieza la garganta de la espiga
+esp2_gar_z    = 5.9;    // dónde empieza la garganta de la espiga
 esp2_gar_h    = 1.2;    // altura de la garganta
 esp2_gar_prof = 0.24;   // profundidad de la garganta
 esp2_gar_sube = 0.15;   // rampa del canto de arriba. Es el canto que la pestaña
@@ -1284,8 +1313,10 @@ esp2_pest     = 0.18;   // resalte de la pestaña, ahora en el cabezal
 esp2_pest_ang = 100;    // ancho angular de la pestaña sobre la lengüeta
 esp2_leng_a   = 3.0;    // ancho de la lengüeta
 esp2_leng_ran = 0.8;    // ranuras que la liberan
-esp2_leng_z0  = 2.0;    // dónde arrancan esas ranuras. Los 2 mm de boca que
-                        // quedan enteros son los que salvan la corona de apoyo
+esp2_leng_z0  = 1.4;    // dónde arrancan esas ranuras. La boca que queda entera
+                        // es la que salva la corona de apoyo; con las espigas
+                        // más cortas hay que arrancar antes o la lengüeta se
+                        // queda sin voladizo y pasa a trabajar al doble
 esp2_chaflan  = 0.6;    // chaflán de la punta y de la boca
 
 /* [Asiento — específico de la v10] */
@@ -1314,6 +1345,10 @@ module junta_hueco_macho() { }
 module junta_macho(sentido = 1) {
     esp2_en_las_dos() difference() {
         union() {
+            // raíz cónica: sale del hombro en Ø4,4 y llega a Ø4,0 en 1,5 mm.
+            // Al imprimir el mango de pie la sección sólo se estrecha hacia
+            // arriba, así que no hay voladizo por ningún lado.
+            cylinder(d1 = esp2_d_raiz, d2 = esp2_d, h = esp2_raiz_h);
             cylinder(r = esp2_r(), h = esp2_largo - esp2_chaflan);
             translate([0, 0, esp2_largo - esp2_chaflan])
                 cylinder(r1 = esp2_r(), r2 = esp2_r() - esp2_chaflan, h = esp2_chaflan);
@@ -1344,8 +1379,11 @@ module esp2_ranura(k, s) {
 module junta_hembra_neg() {
     esp2_en_las_dos() {
         translate([0, 0, -0.01]) cylinder(r = esp2_rb(), h = esp2_largo + 0.5);
+        // El taladro copia la raíz cónica: así el cabezal asienta sin que haya
+        // que rebajarle la boca, que es lo que habría matado la corona.
         translate([0, 0, -0.01])
-            cylinder(r1 = esp2_rb() + esp2_chaflan, r2 = esp2_rb(), h = esp2_chaflan + 0.01);
+            cylinder(d1 = esp2_d_raiz + 2 * esp2_holgura, d2 = esp2_d + 2 * esp2_holgura,
+                     h = esp2_raiz_h + 0.01);
     }
     for (k = [-1, 1]) for (s = [-1, 1]) esp2_ranura(k, s);
 }
