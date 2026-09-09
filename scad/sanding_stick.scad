@@ -42,7 +42,9 @@ fondo_canal = 2;              // medio tubo cóncavo: grosor bajo el canal
 mango_diametro = 12;
 mango_largo = 125;
 mango_chaflan = 1.5;          // chaflán del extremo trasero (apoya en la cama)
-mango_chaflan_frontal = 1.0;  // chaflán del extremo de la espiga
+mango_chaflan_frontal = 1.0;  // chaflán del extremo. Es lo que le queda de asiento
+                              // al cabezal: aquí la boca del hexágono llega a r=3,95
+                              // y el hombro a r=5,00, así que apoyan de sobra
 ranuras_num = 7;              // anillos de agarre
 ranuras_ancho = 1.6;
 ranuras_prof = 0.6;
@@ -120,9 +122,12 @@ module cavidad(af = hex_af + 2 * holgura, h = hex_largo + fondo_cavidad, ch = ch
 module perfil_mango() {
     n = 80;
     chf = mango_chaflan_frontal;
+    // En la variante doble el extremo de atrás también es un hombro: lleva el
+    // chaflán pequeño, no el de culata, o el cabezal de ese lado no apoya.
+    ch0 = (variante_mango == "doble") ? chf : mango_chaflan;
     pts = concat(
-        [[0, 0], [radio_mango(0) - mango_chaflan, 0]],
-        [for (i = [0 : n]) let(z = mango_chaflan + (mango_largo - mango_chaflan - chf) * i / n) [radio_mango(z), z]],
+        [[0, 0], [radio_mango(0) - ch0, 0]],
+        [for (i = [0 : n]) let(z = ch0 + (mango_largo - ch0 - chf) * i / n) [radio_mango(z), z]],
         [[radio_mango(mango_largo) - chf, mango_largo], [0, mango_largo]]
     );
     polygon(pts);

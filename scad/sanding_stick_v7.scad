@@ -1,17 +1,39 @@
 // =====================================================================
-//  SANDING STICK SNAP — v5 · unión de CLIP ELÁSTICO
-//  Versión 5.0 · 2026-09-07 · Jorge (con Claude) · OpenSCAD 2021.01+
+//  SANDING STICK CONO12 — v7 · unión CÓNICA autoblocante
+//  Versión 7.0 · 2026-09-09 · Jorge (con Claude) · OpenSCAD 2021.01+
 //
-//  El vástago está partido en dos brazos flexibles, cada uno con una pestaña
-//  que encaja en un rebaje interior del cabezal. Se empuja hasta el clic y se
-//  saca de un tirón: sin girar, sin roscar y sin comprar nada.
+//  Un cono de 12° de semiángulo en vez de un vástago cilíndrico. Es la v1
+//  hecha bien: un ajuste a presión, pero SIN HOLGURA QUE CALIBRAR. Un cilindro
+//  necesita hueco para entrar, y ese hueco es exactamente el juego con el que
+//  luego baila; un cono entra hasta donde le deja la interferencia y se queda
+//  tocando en toda la superficie. Cero juego radial, cero angular, cero
+//  basculamiento, sin depender de acertar una décima.
 //
-//  Dos caras planas laterales orientan la pieza (los rebajes están a ±90°) y
-//  hacen de chaveta contra el giro. Las pestañas tienen rampa de 40° por los
-//  dos lados: entra y sale, no es un encaje permanente.
+//  Por debajo del ángulo de rozamiento del PLA (~17°) un cono es
+//  autorretenedor: no se suelta solo, y agarra con la fuerza que le hayas
+//  metido con el pulgar. Con 12° queda firme y sale de un tirón; con 7° agarra
+//  más pero hay que golpearlo, y la profundidad de asiento se mueve el doble.
 //
-//  El parámetro a tocar si cuesta o se suelta es snap_pest (saliente de la
-//  pestaña); snap_ranura controla lo flexibles que son los brazos.
+//  Dos planos, TAMBIÉN CÓNICOS, hacen de chaveta. Al escalar con el cono
+//  aprietan a la vez que él, así que el giro tampoco tiene juego. Un plano
+//  paralelo al eje no valdría: se separaría de su cara en cuanto la
+//  profundidad de asiento variara un poco.
+//
+//  EL CABEZAL NO APOYA EN EL HOMBRO, y es a propósito. Quien lo sitúa es el
+//  cono, como en un cono Morse: si el hombro tocase, los dos se pelearían por
+//  posicionar y el cono dejaría de apretar. En nominal la boca del cabezal
+//  queda a ras del hombro —macho y hembra son EL MISMO cono, interferencia
+//  cero por construcción— pero la profundidad real la pone el ajuste: cada
+//  0,1 mm de error radial la mueve 0,47 mm. Como un taladro impreso en
+//  horizontal tiende a salir estrecho, lo normal es que se abra una junta de
+//  medio milímetro entre las dos piezas. No afecta a cómo sujeta y `con_retro`
+//  la cierra. Por eso el chaflán frontal del mango es de 1,7 y no de 1,0: la
+//  junta cae dentro de una V entre los dos chaflanes, que es donde no canta.
+//
+//  Dos topes de seguridad, que con un ajuste normal no llegan a tocar: el
+//  taladro deja 0,8 mm delante de la punta, y si el cono entrase muy suelto la
+//  boca del cabezal se apoyaría en el chaflán del mango medio milímetro más
+//  adentro, antes de que la cuña pudiera abrir una pared de 1,6 mm.
 // =====================================================================
 
 /* [Pieza a generar] */
@@ -78,19 +100,32 @@ cuello_90 = 3;
 /* [Calidad] */
 $fn = 64;
 
-/* [Clip elástico — la unión de la v5] */
-snap_d       = 8.6;   // Ø del vástago
-snap_largo   = 13;    // longitud del vástago
-snap_holgura = 0.20;  // holgura radial del taladro
-snap_ranura  = 3.8;   // ancho de la ranura que separa los dos brazos
-snap_ranura_z= 1.5;   // dónde empieza la ranura (desde el hombro)
-snap_pest    = 0.6;   // saliente radial de la pestaña
-snap_pest_z  = 8.8;   // inicio de la pestaña desde el hombro
-snap_pest_h  = 2.0;   // altura recta de la pestaña
-snap_rampa   = 0.9;   // altura de las rampas de 40° arriba y abajo
-snap_pest_ang= 62;    // ancho angular del rebaje del cabezal
-snap_plano   = 0.9;   // profundidad de las caras planas (chaveta)
-snap_chaflan = 0.8;
+/* [Cono — la unión de la v7] */
+con_d_base    = 8.4;   // Ø del cono en su arranque, al final del cuello
+con_angulo    = 12;    // semiángulo. Por debajo de ~17° (rozamiento del PLA) el
+                       // cono es autorretenedor. Bajarlo agarra más, cuesta más
+                       // sacarlo y mueve más el asiento: 1/tan(α) mm por mm
+con_largo     = 9.0;   // longitud del cono
+con_cuello    = 1.0;   // cuello rebajado antes del cono: por donde pasa la boca
+con_retro     = 0;     // corrección de la profundidad de asiento, en mm de
+                       // recorrido: -0,3 mete el cabezal 0,3 mm más hacia el
+                       // mango. En nominal vale 0 y macho y hembra son el mismo
+                       // cono. Es lo único calibrable, y sólo mueve la junta
+con_plano     = 1.0;   // profundidad de cada plano de chaveta, en la base
+con_relieve   = 0.3;   // cuánto se rebaja el cuello respecto al cono
+con_fondo     = 0.8;   // hueco delante de la punta: tope de seguridad
+con_chaflan   = 0.6;   // chaflán de la punta del cono
+con_avellanado = 0.4;  // avellanado de la boca del cabezal. No subirlo: por
+                       // encima de 0,4 se come el anillo de la boca, que es el
+                       // segundo tope de seguridad
+
+/* [Asiento — específico de la v7] */
+// Al revés que en las demás: aquí el hombro NO debe tocar. La punta del mango
+// acaba en Ø8,60 y el anillo de la boca del cabezal empieza en Ø9,63, así que
+// se cruzan sin rozarse y el cabezal puede entrar medio milímetro de más si el
+// ajuste sale suelto. Por debajo de 1,59 el anillo apoyaría en la cara de la
+// punta y le disputaría el asiento al cono.
+mango_chaflan_frontal = 1.7;
 
 // ---------------------------------------------------------------------
 //  Auxiliares
@@ -126,54 +161,72 @@ module sector2d(ri, ro, ang, n = 6) {
 }
 
 // ---------------------------------------------------------------------
-//  JUNTA · clip elástico
+//  JUNTA · cono autoblocante con dos planos de chaveta
 // ---------------------------------------------------------------------
-function snap_rp() = snap_d / 2;
-function snap_rb() = snap_rp() + snap_holgura;
-module snap_planos(r, z0, h, extra) {        // quita las dos caras planas (±X)
-    p = snap_rp() - snap_plano + extra;
-    translate([ p, -r - 1, z0 - 0.01]) cube([r + 2, 2 * r + 2, h + 0.02]);
-    translate([-p - (r + 2), -r - 1, z0 - 0.01]) cube([r + 2, 2 * r + 2, h + 0.02]);
+function con_r()    = con_d_base / 2;
+function con_tan()  = tan(con_angulo);
+function con_zap()  = con_cuello + con_r() / con_tan();   // altura del vértice
+function con_R(z)   = (con_zap() - z) * con_tan();        // radio del cono a la altura z
+function con_prop() = (con_r() - con_plano) / con_r();    // planos, en fracción del radio
+function con_rp()   = con_R(con_cuello + con_largo);      // radio en la punta
+
+// Círculo recortado por dos planos. El cono entero es una homotecia desde su
+// vértice, así que los planos se estrechan con él y quedan paralelos a la
+// generatriz: aprietan cuando aprieta el cono. Un plano paralelo al eje se
+// separaría de su cara en cuanto la profundidad de asiento variara.
+module con_perfil(R) {
+    intersection() {
+        circle(r = R);
+        square([2 * R + 2, 2 * R * con_prop()], center = true);
+    }
 }
-function junta_d() = snap_d;
-function junta_largo() = snap_largo;
-function junta_giro() = 0;
+module con_losa(z, dr = 0) {
+    translate([0, 0, z]) linear_extrude(height = 0.01) con_perfil(con_R(z) - dr);
+}
+module con_tramo(z0, z1, dr = 0) {
+    R0 = con_R(z0) - dr; R1 = con_R(z1) - dr;
+    translate([0, 0, z0]) linear_extrude(height = z1 - z0, scale = R1 / R0, convexity = 6)
+        con_perfil(R0);
+}
+
+function junta_d() = con_d_base;
+function junta_largo() = con_cuello + con_largo;
+function junta_giro() = 0;      // esta unión no gira: entra recta y hace cuña
 module junta_hueco_macho() { }
+
 module junta_macho(sentido = 1) {
-    difference() {
+    // Cuello: el MISMO perfil rebajado `con_relieve` en radio, no un cilindro.
+    // Un cilindro de revolución se comería los planos del taladro (fue el fallo
+    // de la primera versión: 2,5 mm³ de interferencia justo en la boca), y
+    // además dejaría aquí la sección más débil de toda la pieza.
+    con_tramo(-0.01, con_cuello - 0.3, con_relieve);
+    hull() {                                    // enlace a 45° con la base del cono
+        con_losa(con_cuello - 0.3, con_relieve);
+        con_losa(con_cuello);
+    }
+    intersection() {
+        con_tramo(con_cuello, con_cuello + con_largo);
         union() {
-            cylinder(r = snap_rp(), h = snap_largo - snap_chaflan);
-            translate([0, 0, snap_largo - snap_chaflan])
-                cylinder(r1 = snap_rp(), r2 = snap_rp() - snap_chaflan, h = snap_chaflan);
-            // pestañas en ±Y, sobre la cara exterior de cada brazo
-            for (k = [0 : 1]) rotate([0, 0, 90 + 180 * k - snap_pest_ang / 2])
-                rotate_extrude(angle = snap_pest_ang, $fn = 96)
-                        polygon([[snap_rp() - 0.3, snap_pest_z - snap_rampa],
-                                 [snap_rp() + snap_pest, snap_pest_z],
-                                 [snap_rp() + snap_pest, snap_pest_z + snap_pest_h],
-                                 [snap_rp() - 0.3, snap_pest_z + snap_pest_h + snap_rampa]]);
+            cylinder(r = con_r() + 1, h = junta_largo() - con_chaflan);
+            translate([0, 0, junta_largo() - con_chaflan])
+                cylinder(r1 = con_rp(), r2 = con_rp() - con_chaflan, h = con_chaflan);
         }
-        snap_planos(snap_rp() + snap_pest, 0, snap_largo + 0.5, 0);
-        translate([-snap_rp() - 2, -snap_ranura / 2, snap_ranura_z])   // ranura entre brazos
-            cube([2 * snap_rp() + 4, snap_ranura, snap_largo + 1]);
     }
 }
+
+// El taladro es el MISMO cono corrido `con_retro`: su radio a la profundidad z'
+// vale con_R(z' + con_retro). Con con_retro = 0 macho y hembra son idénticos y
+// la interferencia es cero por construcción. Baja hasta con_fondo por delante
+// de la punta.
 module junta_hembra_neg() {
-    difference() {
-        union() {
-            translate([0, 0, -0.01]) cylinder(r = snap_rb(), h = snap_largo + 0.6);
-            translate([0, 0, -0.01])
-                cylinder(r1 = snap_rb() + snap_chaflan, r2 = snap_rb(), h = snap_chaflan + 0.01);
-        }
-        snap_planos(snap_rb() + snap_pest + 1, 0, snap_largo + 0.7, snap_holgura);
-    }
-    // rebajes donde encajan las pestañas
-    for (k = [0 : 1]) rotate([0, 0, 90 + 180 * k - (snap_pest_ang + 8) / 2])
-        rotate_extrude(angle = snap_pest_ang + 8, $fn = 96)
-            polygon([[snap_rb() - 0.01, snap_pest_z - snap_rampa - 0.3],
-                     [snap_rb() + snap_pest + 0.15, snap_pest_z - 0.2],
-                     [snap_rb() + snap_pest + 0.15, snap_pest_z + snap_pest_h + 0.2],
-                     [snap_rb() - 0.01, snap_pest_z + snap_pest_h + snap_rampa + 0.3]]);
+    z0 = -0.5;                                   // asoma por la boca: se solapa en
+    z1 = junta_largo() + con_fondo - con_retro;  //   volumen con el avellanado
+    R0 = con_R(z0 + con_retro); R1 = con_R(z1 + con_retro);
+    translate([0, 0, z0]) linear_extrude(height = z1 - z0, scale = R1 / R0, convexity = 6)
+        con_perfil(R0);
+    rm = con_R(con_retro);
+    translate([0, 0, -0.01])
+        cylinder(r1 = rm + con_avellanado, r2 = rm, h = con_avellanado + 0.01);
 }
 module junta_hembra_pos() { }
 module junta_extra() { }

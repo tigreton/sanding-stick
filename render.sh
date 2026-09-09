@@ -3,10 +3,12 @@
 #
 #   ./render.sh                  → v1, calidad final ($fn=96)  → stl/v1/
 #   ./render.sh v3               → sólo la v3                  → stl/v3/
-#   ./render.sh todas            → las cinco versiones
+#   ./render.sh todas            → las diez versiones
 #   ./render.sh v2 preview       → rápido ($fn=48) + PNG       → preview_stl/v2/, png/v2/
 #
 # Versiones:  v1 hexágono a presión · v2 bayoneta · v3 rosca · v4 imán · v5 clip
+#             v6 cola de milano transversal · v7 cono autoblocante · v8 cuña
+#             v9 pinza cónica · v10 doble espiga
 #
 # Los STL salen en BINARIO (--export-format binstl): unas cinco veces más
 # pequeños que en ASCII y los lee igual cualquier laminador.
@@ -19,9 +21,23 @@ cd "$(dirname "$0")"
 OPENSCAD="${OPENSCAD:-openscad}"
 XVFB=""; command -v xvfb-run >/dev/null 2>&1 && XVFB="xvfb-run -a"
 
+# Sin esto, si openscad no está en el PATH el script recorre las 18 piezas, no
+# escribe ni un fichero y termina diciendo «Listo».
+if ! command -v "$OPENSCAD" >/dev/null 2>&1 && [[ ! -x "$OPENSCAD" ]]; then
+  echo "ERROR: no encuentro '$OPENSCAD'." >&2
+  echo "  · En Windows:  OPENSCAD='/c/Program Files/OpenSCAD/openscad.com' ./render.sh v2" >&2
+  echo "    (usa openscad.com, no el .exe: el .exe no escribe en la consola)" >&2
+  echo "  · O añade OpenSCAD al PATH, o usa render.ps1 desde PowerShell." >&2
+  exit 1
+fi
+FALLOS=0
+
 ARG1="${1:-v1}"; MODE="${2:-final}"
-if [[ "$MODE" == "preview" ]]; then FN=48; RAIZ=preview_stl; PNG=1; else FN=96; RAIZ=stl; PNG=0; fi
-VERS=("$ARG1"); [[ "$ARG1" == "todas" ]] && VERS=(v1 v2 v3 v4 v5)
+# $fn=64 en calidad final: en un cilindro Ø12 el error de facetado es de 0,007 mm,
+# treinta veces menos que la resolución de una boquilla de 0,4. Con 96 no se gana
+# nada imprimible y el mango tarda tres veces más en resolver los booleanos.
+if [[ "$MODE" == "preview" ]]; then FN=48; RAIZ=preview_stl; PNG=1; else FN=64; RAIZ=stl; PNG=0; fi
+VERS=("$ARG1"); [[ "$ARG1" == "todas" ]] && VERS=(v1 v2 v3 v4 v5 v6 v7 v8 v9 v10)
 
 scad_de() { [[ "$1" == "v1" ]] && echo "scad/sanding_stick.scad" || echo "scad/sanding_stick_$1.scad"; }
 
@@ -35,6 +51,10 @@ for V in "${VERS[@]}"; do
     echo "   · $name"
     $XVFB "$OPENSCAD" --export-format binstl -o "$OUT/$name.stl" -D "\$fn=$FN" "$@" "$SCAD" \
       2>&1 | grep -E "ERROR" || true
+    if [[ ! -s "$OUT/$name.stl" ]]; then
+      echo "     FALLÓ: no se ha escrito $OUT/$name.stl" >&2
+      FALLOS=$((FALLOS + 1))
+    fi
     if [[ "$PNG" == "1" ]]; then
       $XVFB "$OPENSCAD" -o "$PNGD/$name.png" --imgsize=1000,750 --viewall --autocenter \
         --camera=0,0,0,60,0,35,0 --projection=p --colorscheme=Tomorrow -D "\$fn=$FN" "$@" "$SCAD" \
@@ -55,4 +75,8 @@ for V in "${VERS[@]}"; do
   done
   render "test_ajuste" -D 'pieza="test_ajuste"'
 done
-echo "Listo."
+if [[ "$FALLOS" -gt 0 ]]; then
+  echo "Terminado con $FALLOS piezas sin escribir." >&2
+  exit 1
+fi
+echo "Listo. $(ls -1 "$RAIZ"/*/*.stl 2>/dev/null | wc -l) STL en $RAIZ/"

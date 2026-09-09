@@ -1,17 +1,33 @@
 // =====================================================================
-//  SANDING STICK SNAP — v5 · unión de CLIP ELÁSTICO
-//  Versión 5.0 · 2026-09-07 · Jorge (con Claude) · OpenSCAD 2021.01+
+//  SANDING STICK DOVE7 — v6 · unión de COLA DE MILANO transversal
+//  Versión 6.0 · 2026-09-08 · Jorge (con Claude) · OpenSCAD 2021.01+
 //
-//  El vástago está partido en dos brazos flexibles, cada uno con una pestaña
-//  que encaja en un rebaje interior del cabezal. Se empuja hasta el clic y se
-//  saca de un tirón: sin girar, sin roscar y sin comprar nada.
+//  El cabezal no se enchufa: DESLIZA DE LADO sobre un carril de cola de milano
+//  en la punta del mango. Es la única unión de la familia cuya dirección de
+//  desmontaje no coincide con ninguna dirección de lijado: empujar, tirar y
+//  girar actúan sobre el eje del mango o alrededor de él, y el cabezal sale
+//  perpendicular a los dos. El propio uso no puede desmontarlo.
 //
-//  Dos caras planas laterales orientan la pieza (los rebajes están a ±90°) y
-//  hacen de chaveta contra el giro. Las pestañas tienen rampa de 40° por los
-//  dos lados: entra y sale, no es un encaje permanente.
+//  El destalonado de 12° bloquea la tracción POR GEOMETRÍA, no por fricción ni
+//  por un brazo elástico: para separar el cabezal del mango habría que romper
+//  los labios. Y un carril no puede girar dentro de su ranura, así que el par
+//  de lijar de canto lo aguanta la forma, no el ajuste.
 //
-//  El parámetro a tocar si cuesta o se suelta es snap_pest (saliente de la
-//  pestaña); snap_ranura controla lo flexibles que son los brazos.
+//  El carril es CÓNICO: la cresta se estrecha 0,7 mm desde el tope hasta la
+//  entrada, y la ranura del cabezal se estrecha igual. Así entra holgado y sólo
+//  aprieta en el último milímetro, y por el ángulo del milano ese apriete
+//  empuja el cabezal contra el hombro del mango — misma cuña autoblocante que
+//  la bayoneta de la v2, pero en línea recta.
+//
+//  Retención en el sentido del deslizamiento: tope duro contra la pared ciega
+//  del cabezal por un lado, y un resalte de 0,10 mm en la entrada del carril
+//  por el otro. Para pasarlo el cabezal tiene que levantarse ~0,45 mm del
+//  hombro, así que se nota como un clic y no cede lijando de lado. El resalte
+//  está en el extremo de ENTRADA a propósito: sólo queda cubierto en los
+//  últimos 1,5 mm del recorrido, y no roza durante todo el deslizamiento.
+//
+//  Ninguna pieza necesita soportes. En el cabezal los flancos cierran a 12° de
+//  la vertical y en el mango el carril ensancha a 12°: nada baja de 45°.
 // =====================================================================
 
 /* [Pieza a generar] */
@@ -78,19 +94,34 @@ cuello_90 = 3;
 /* [Calidad] */
 $fn = 64;
 
-/* [Clip elástico — la unión de la v5] */
-snap_d       = 8.6;   // Ø del vástago
-snap_largo   = 13;    // longitud del vástago
-snap_holgura = 0.20;  // holgura radial del taladro
-snap_ranura  = 3.8;   // ancho de la ranura que separa los dos brazos
-snap_ranura_z= 1.5;   // dónde empieza la ranura (desde el hombro)
-snap_pest    = 0.6;   // saliente radial de la pestaña
-snap_pest_z  = 8.8;   // inicio de la pestaña desde el hombro
-snap_pest_h  = 2.0;   // altura recta de la pestaña
-snap_rampa   = 0.9;   // altura de las rampas de 40° arriba y abajo
-snap_pest_ang= 62;    // ancho angular del rebaje del cabezal
-snap_plano   = 0.9;   // profundidad de las caras planas (chaveta)
-snap_chaflan = 0.8;
+/* [Cola de milano — la unión de la v6] */
+cm_alto        = 5.0;   // altura del carril sobre el hombro
+cm_cresta      = 7.0;   // ancho de la cresta en el extremo del tope
+cm_angulo      = 12;    // ángulo del flanco respecto a la vertical (0 = sin bloqueo)
+cm_conicidad   = 0.7;   // cuánto se estrecha la cresta de la entrada al tope:
+                        // es lo que hace que deslizar hasta el fondo apriete
+cm_aprieto     = 0.04;  // interferencia total de flancos en el asiento — CALIBRAR ÉSTA
+cm_muesca      = 0.10;  // resalte de retención en la entrada del carril (0 = sin clic)
+cm_muesca_l    = 1.0;   // longitud de la meseta del resalte
+cm_juego_mue   = 0.06;  // holgura del hueco del resalte en el cabezal
+cm_juego_fondo = 0.6;   // holgura entre la cresta y el fondo de la ranura: tiene que
+                        // ser mayor que lo que el cabezal se levanta al pasar la muesca
+cm_y_tope      = 3.0;   // cara de tope del carril, medida desde el eje
+cm_juego_tope  = 0.15;  // juego entre esa cara y la pared ciega del cabezal
+cm_y_entrada   = -4.9;  // final del carril por el lado de entrada
+cm_chaflan     = 0.6;   // chaflán de la cresta y avellanado de la boca
+cm_orient      = 90;    // giro de la unión sobre el eje de la herramienta. Con 90 el
+                        // carril desliza perpendicular a la cara de lijado y la ranura
+                        // del cabezal sale hacia ARRIBA al imprimir: flancos verticales,
+                        // cero voladizos, y la presión de lijar mete el cabezal contra
+                        // su tope en vez de sacarlo. Con 0 desliza de lado, pero los
+                        // flancos quedan a 12° de la horizontal y hay que soportarlos.
+
+/* [Asiento — específico de la v6] */
+// La boca del cabezal acaba en Ø10,48: con 0,4 el hombro llega a Ø11,2 y apoya
+// en toda la corona. Aquí el hombro es TODA la superficie de apoyo, así que es
+// lo que impide que el cabezal bascule.
+mango_chaflan_frontal = 0.4;
 
 // ---------------------------------------------------------------------
 //  Auxiliares
@@ -126,54 +157,76 @@ module sector2d(ri, ro, ang, n = 6) {
 }
 
 // ---------------------------------------------------------------------
-//  JUNTA · clip elástico
+//  JUNTA · cola de milano transversal cónica
 // ---------------------------------------------------------------------
-function snap_rp() = snap_d / 2;
-function snap_rb() = snap_rp() + snap_holgura;
-module snap_planos(r, z0, h, extra) {        // quita las dos caras planas (±X)
-    p = snap_rp() - snap_plano + extra;
-    translate([ p, -r - 1, z0 - 0.01]) cube([r + 2, 2 * r + 2, h + 0.02]);
-    translate([-p - (r + 2), -r - 1, z0 - 0.01]) cube([r + 2, 2 * r + 2, h + 0.02]);
+function cm_tapa_r() = mango_diametro / 2 - mango_chaflan_frontal;
+// Referencia geométrica del cono: donde la cresta a tope tocaría el borde de la punta
+function cm_y0()  = -sqrt(pow(cm_tapa_r(), 2) - pow(cm_cresta / 2, 2));
+function cm_rec() = cm_y_tope - cm_y0();
+function cm_w(y)  = cm_cresta - cm_conicidad * (cm_y_tope - y) / cm_rec();
+function cm_yc()  = cm_y_tope + cm_juego_tope;      // pared ciega del cabezal
+
+// Perfil del carril en el plano (x = ancho, z = altura). La cresta es más ancha
+// que la base: ese destalonado es todo el bloqueo axial de la unión.
+// `dx` desplaza los dos flancos hacia fuera (holguras, apriete, muesca).
+module cm_perfil(w, dx = 0, fondo = 0) {
+    wb = w - 2 * cm_alto * tan(cm_angulo);
+    if (fondo > 0)
+        polygon([[-wb/2 - dx, 0], [wb/2 + dx, 0], [w/2 + dx, cm_alto],
+                 [w/2 + dx, cm_alto + fondo], [-w/2 - dx, cm_alto + fondo],
+                 [-w/2 - dx, cm_alto]]);
+    else
+        polygon([[-wb/2 - dx, 0], [wb/2 + dx, 0], [w/2 + dx, cm_alto], [-w/2 - dx, cm_alto]]);
 }
-function junta_d() = snap_d;
-function junta_largo() = snap_largo;
-function junta_giro() = 0;
+// Losa infinitesimal en el plano y = cte, para construir el carril por hull()
+module cm_losa(y, dx = 0, fondo = 0) {
+    translate([0, y, 0]) rotate([90, 0, 0]) linear_extrude(height = 0.01)
+        cm_perfil(cm_w(y), dx, fondo);
+}
+// Resalte de retención: rampa · meseta · rampa, en el extremo de entrada
+module cm_resalte(dx, base) {
+    ya = max(cm_y_entrada, cm_y0()) + 0.4; yb = ya + cm_muesca_l;
+    hull() { cm_losa(ya - 0.7, base);  cm_losa(ya,      base + dx); }
+    hull() { cm_losa(ya,       base + dx); cm_losa(yb,  base + dx); }
+    hull() { cm_losa(yb,       base + dx); cm_losa(yb + 0.7, base); }
+}
+
+function junta_d() = cm_cresta;   // lo que deja libre al plano del mango doble
+function junta_largo() = cm_alto;
+function junta_giro() = 0;     // esta unión no gira: entra de lado
 module junta_hueco_macho() { }
+
+// Los marcos del mango y de la boca del cabezal están espejados en X, así que la
+// misma orientación se pide con giros de signo contrario. Si se igualan, la conicidad
+// del carril queda invertida y pieza="interferencia" lo canta al instante.
 module junta_macho(sentido = 1) {
-    difference() {
+    rotate([0, 0, -cm_orient]) intersection() {
         union() {
-            cylinder(r = snap_rp(), h = snap_largo - snap_chaflan);
-            translate([0, 0, snap_largo - snap_chaflan])
-                cylinder(r1 = snap_rp(), r2 = snap_rp() - snap_chaflan, h = snap_chaflan);
-            // pestañas en ±Y, sobre la cara exterior de cada brazo
-            for (k = [0 : 1]) rotate([0, 0, 90 + 180 * k - snap_pest_ang / 2])
-                rotate_extrude(angle = snap_pest_ang, $fn = 96)
-                        polygon([[snap_rp() - 0.3, snap_pest_z - snap_rampa],
-                                 [snap_rp() + snap_pest, snap_pest_z],
-                                 [snap_rp() + snap_pest, snap_pest_z + snap_pest_h],
-                                 [snap_rp() - 0.3, snap_pest_z + snap_pest_h + snap_rampa]]);
+            hull() { cm_losa(cm_y0() - 1.5); cm_losa(cm_y_tope); }
+            if (cm_muesca > 0) cm_resalte(cm_muesca, 0);
         }
-        snap_planos(snap_rp() + snap_pest, 0, snap_largo + 0.5, 0);
-        translate([-snap_rp() - 2, -snap_ranura / 2, snap_ranura_z])   // ranura entre brazos
-            cube([2 * snap_rp() + 4, snap_ranura, snap_largo + 1]);
+        // contorno de la punta del mango, con chaflán en la cresta
+        union() {
+            cylinder(r = cm_tapa_r(), h = cm_alto - cm_chaflan);
+            translate([0, 0, cm_alto - cm_chaflan])
+                cylinder(r1 = cm_tapa_r(), r2 = cm_tapa_r() - cm_chaflan, h = cm_chaflan);
+        }
+        // tope duro por delante, nariz recortada por detrás
+        translate([-20, cm_y_entrada, -1]) cube([40, cm_y_tope - cm_y_entrada, cm_alto + 2]);
     }
 }
+
 module junta_hembra_neg() {
-    difference() {
-        union() {
-            translate([0, 0, -0.01]) cylinder(r = snap_rb(), h = snap_largo + 0.6);
-            translate([0, 0, -0.01])
-                cylinder(r1 = snap_rb() + snap_chaflan, r2 = snap_rb(), h = snap_chaflan + 0.01);
-        }
-        snap_planos(snap_rb() + snap_pest + 1, 0, snap_largo + 0.7, snap_holgura);
+    rotate([0, 0, cm_orient]) {
+    // ranura cónica, abierta por -Y y ciega en cm_yc()
+    hull() { cm_losa(-9, -cm_aprieto / 2, cm_juego_fondo);
+             cm_losa(cm_yc(), -cm_aprieto / 2, cm_juego_fondo); }
+    // avellanado de entrada: se solapa en volumen con la ranura, no sólo la toca
+    hull() { cm_losa(-9, cm_chaflan - cm_aprieto / 2, cm_juego_fondo + cm_chaflan);
+             cm_losa(-4.0, -cm_aprieto / 2, cm_juego_fondo); }
+    // hueco donde cae el resalte al asentar
+    if (cm_muesca > 0) cm_resalte(cm_muesca + cm_juego_mue, -cm_aprieto / 2);
     }
-    // rebajes donde encajan las pestañas
-    for (k = [0 : 1]) rotate([0, 0, 90 + 180 * k - (snap_pest_ang + 8) / 2])
-        rotate_extrude(angle = snap_pest_ang + 8, $fn = 96)
-            polygon([[snap_rb() - 0.01, snap_pest_z - snap_rampa - 0.3],
-                     [snap_rb() + snap_pest + 0.15, snap_pest_z - 0.2],
-                     [snap_rb() + snap_pest + 0.15, snap_pest_z + snap_pest_h + 0.2],
-                     [snap_rb() - 0.01, snap_pest_z + snap_pest_h + snap_rampa + 0.3]]);
 }
 module junta_hembra_pos() { }
 module junta_extra() { }

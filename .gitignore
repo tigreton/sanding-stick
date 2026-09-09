@@ -12,6 +12,11 @@ stl/*/
 !stl/v3/
 !stl/v4/
 !stl/v5/
+!stl/v6/
+!stl/v7/
+!stl/v8/
+!stl/v9/
+!stl/v10/
 stl/v*/*
 !stl/v*/test_ajuste.stl
 

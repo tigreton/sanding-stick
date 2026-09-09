@@ -1,17 +1,48 @@
 // =====================================================================
-//  SANDING STICK SNAP — v5 · unión de CLIP ELÁSTICO
-//  Versión 5.0 · 2026-09-07 · Jorge (con Claude) · OpenSCAD 2021.01+
+//  SANDING STICK 2ESPIGAS — v10 · unión de DOBLE ESPIGA con clic
+//  Versión 10.1 · 9 de septiembre de 2026 · Jorge (con Claude) · OpenSCAD 2021.01+
 //
-//  El vástago está partido en dos brazos flexibles, cada uno con una pestaña
-//  que encaja en un rebaje interior del cabezal. Se empuja hasta el clic y se
-//  saca de un tirón: sin girar, sin roscar y sin comprar nada.
+//  v10.1 — LA 10.0 SE ROMPÍA. Las espigas iban partidas en dos brazos cada una
+//  y al primer montaje a mano se partieron. La ficha decía 0,56 % de
+//  deformación y era falso por dos motivos: se tomó como voladizo la ranura
+//  entera (9 mm) en vez de la distancia real hasta la pestaña (6,2), y se trató
+//  la sección como un rectángulo de 1,2 cuando es un segmento circular con la
+//  fibra exterior a 0,70 del centroide. El número real era 1,37 %.
 //
-//  Dos caras planas laterales orientan la pieza (los rebajes están a ±90°) y
-//  hacen de chaveta contra el giro. Las pestañas tienen rampa de 40° por los
-//  dos lados: entra y sale, no es un encaje permanente.
+//  Pero el fallo de fondo era otro, y es el que hay que recordar: **el brazo
+//  era un voladizo vertical en una pieza que se imprime de pie**, así que la
+//  tracción iba ENTRE CAPAS, que es donde el PLA rompe sobre el 1 %. El clip de
+//  la v5 trabaja aún peor (1,9 %) pero con 4,6 veces más sección — y por eso su
+//  ficha lleva desde el principio el aviso de imprimirlo en PETG.
 //
-//  El parámetro a tocar si cuesta o se suelta es snap_pest (saliente de la
-//  pestaña); snap_ranura controla lo flexibles que son los brazos.
+//  La regla que sale de aquí: **lo que flexa va en el CABEZAL, no en el mango.**
+//  El mango se imprime de pie y cualquier voladizo suyo flexa entre capas; el
+//  cabezal se imprime tumbado sobre su cara de lijado, así que una lengüeta suya
+//  que flexe hacia los lados trabaja DENTRO del plano de la capa.
+//
+//  Así queda: las espigas son MACIZAS —9,08 mm² cada una, no hay nada que
+//  romper— y llevan una garganta. Quien flexa es el cabezal: la pared exterior
+//  sobre cada taladro, liberada por dos ranuras, hace de lengüeta y lleva la
+//  pestaña.
+//
+//  Y flexa poquísimo: la pestaña sobresale 0,18 dentro de un taladro que ya es
+//  0,075 más ancho que la espiga, así que **lo que la lengüeta tiene que
+//  abrirse es 0,105 mm**, no 0,18. Con 1,5 de pared, 3,0 de ancho y 7,0 de
+//  voladizo eso son 0,49 % de deformación, y encima en el plano bueno. Frente
+//  al 1,37 % entre capas de la 10.0.
+//
+//  Ese mismo 0,105 es el escalón que retiene. Como la retención sale del
+//  ÁNGULO del canto y no de su profundidad, el canto de arriba es corto a
+//  propósito (0,15 para 0,24 de garganta, unos 64°): retiene de sobra sin
+//  pedirle a la lengüeta ni una décima más de recorrido. `esp2_gar_sube` es el
+//  parámetro con el que se gradúa — a 0,08 cuesta mucho sacarlo, a 0,30 sale
+//  solo.
+//
+//  Las espigas se separan ahora en el eje que en el cabezal impreso es el
+//  HORIZONTAL, no el vertical: así las lengüetas caen en los costados y no en
+//  la cara que apoya en la cama. Se pierde algo de par de fuerzas contra la
+//  presión de lijado, pero quien se come ese momento es la corona de apoyo de
+//  51,6 mm², que sigue siendo la mayor de las diez.
 // =====================================================================
 
 /* [Pieza a generar] */
@@ -78,19 +109,33 @@ cuello_90 = 3;
 /* [Calidad] */
 $fn = 64;
 
-/* [Clip elástico — la unión de la v5] */
-snap_d       = 8.6;   // Ø del vástago
-snap_largo   = 13;    // longitud del vástago
-snap_holgura = 0.20;  // holgura radial del taladro
-snap_ranura  = 3.8;   // ancho de la ranura que separa los dos brazos
-snap_ranura_z= 1.5;   // dónde empieza la ranura (desde el hombro)
-snap_pest    = 0.6;   // saliente radial de la pestaña
-snap_pest_z  = 8.8;   // inicio de la pestaña desde el hombro
-snap_pest_h  = 2.0;   // altura recta de la pestaña
-snap_rampa   = 0.9;   // altura de las rampas de 40° arriba y abajo
-snap_pest_ang= 62;    // ancho angular del rebaje del cabezal
-snap_plano   = 0.9;   // profundidad de las caras planas (chaveta)
-snap_chaflan = 0.8;
+/* [Doble espiga — la unión de la v10] */
+esp2_d        = 3.4;    // Ø de cada espiga. MACIZA: en la 10.0 iba partida en
+                        // dos brazos de 2,86 mm² y se rompieron al primer montaje
+esp2_sep      = 5.4;    // separación entre ejes. Cuanto mayor, menos juego
+                        // angular (vale holgura/(sep/2))
+esp2_largo    = 12;     // longitud de las espigas
+esp2_holgura  = 0.075;  // holgura radial del taladro. Con 0,075 el juego de giro
+                        // es de 1,6°; bajarla a 0,05 lo deja en 1,1°
+esp2_gar_z    = 8.4;    // dónde empieza la garganta de la espiga
+esp2_gar_h    = 1.2;    // altura de la garganta
+esp2_gar_prof = 0.24;   // profundidad de la garganta
+esp2_gar_sube = 0.15;   // rampa del canto de arriba. Es el canto que la pestaña
+                        // tiene que trepar para salir: cuanto más corto, más
+                        // retiene y más cuesta desmontar
+esp2_gar_baja = 0.50;   // rampa del canto de abajo, que no trabaja
+esp2_pest     = 0.18;   // resalte de la pestaña, ahora en el cabezal
+esp2_pest_ang = 100;    // ancho angular de la pestaña sobre la lengüeta
+esp2_leng_a   = 3.0;    // ancho de la lengüeta
+esp2_leng_ran = 0.8;    // ranuras que la liberan
+esp2_leng_z0  = 2.0;    // dónde arrancan esas ranuras. Los 2 mm de boca que
+                        // quedan enteros son los que salvan la corona de apoyo
+esp2_chaflan  = 0.6;    // chaflán de la punta y de la boca
+
+/* [Asiento — específico de la v10] */
+// Aquí el hombro es TODO. Con 0,4 llega a Ø11,2 y la boca del cabezal acaba en
+// Ø10,48: apoyan en toda la corona, que es la mayor de la familia.
+mango_chaflan_frontal = 0.4;
 
 // ---------------------------------------------------------------------
 //  Auxiliares
@@ -126,56 +171,73 @@ module sector2d(ri, ro, ang, n = 6) {
 }
 
 // ---------------------------------------------------------------------
-//  JUNTA · clip elástico
+//  JUNTA · doble espiga maciza con lengüeta en el cabezal
 // ---------------------------------------------------------------------
-function snap_rp() = snap_d / 2;
-function snap_rb() = snap_rp() + snap_holgura;
-module snap_planos(r, z0, h, extra) {        // quita las dos caras planas (±X)
-    p = snap_rp() - snap_plano + extra;
-    translate([ p, -r - 1, z0 - 0.01]) cube([r + 2, 2 * r + 2, h + 0.02]);
-    translate([-p - (r + 2), -r - 1, z0 - 0.01]) cube([r + 2, 2 * r + 2, h + 0.02]);
-}
-function junta_d() = snap_d;
-function junta_largo() = snap_largo;
+function esp2_r()  = esp2_d / 2;
+function esp2_rb() = esp2_r() + esp2_holgura;
+function esp2_y()  = esp2_sep / 2;
+
+// Separadas en el eje Y de la junta, que en el cabezal impreso es el horizontal:
+// las lengüetas caen en los costados, no en la cara que se apoya en la cama.
+module esp2_en_las_dos() { for (k = [-1, 1]) translate([0, k * esp2_y(), 0]) children(); }
+
+function junta_d() = 8.6;      // no es un Ø real: es lo que deja al plano
+                               // antirrodadura del mango doble un ancho sensato
+function junta_largo() = esp2_largo;
 function junta_giro() = 0;
 module junta_hueco_macho() { }
+
 module junta_macho(sentido = 1) {
-    difference() {
+    esp2_en_las_dos() difference() {
         union() {
-            cylinder(r = snap_rp(), h = snap_largo - snap_chaflan);
-            translate([0, 0, snap_largo - snap_chaflan])
-                cylinder(r1 = snap_rp(), r2 = snap_rp() - snap_chaflan, h = snap_chaflan);
-            // pestañas en ±Y, sobre la cara exterior de cada brazo
-            for (k = [0 : 1]) rotate([0, 0, 90 + 180 * k - snap_pest_ang / 2])
-                rotate_extrude(angle = snap_pest_ang, $fn = 96)
-                        polygon([[snap_rp() - 0.3, snap_pest_z - snap_rampa],
-                                 [snap_rp() + snap_pest, snap_pest_z],
-                                 [snap_rp() + snap_pest, snap_pest_z + snap_pest_h],
-                                 [snap_rp() - 0.3, snap_pest_z + snap_pest_h + snap_rampa]]);
+            cylinder(r = esp2_r(), h = esp2_largo - esp2_chaflan);
+            translate([0, 0, esp2_largo - esp2_chaflan])
+                cylinder(r1 = esp2_r(), r2 = esp2_r() - esp2_chaflan, h = esp2_chaflan);
         }
-        snap_planos(snap_rp() + snap_pest, 0, snap_largo + 0.5, 0);
-        translate([-snap_rp() - 2, -snap_ranura / 2, snap_ranura_z])   // ranura entre brazos
-            cube([2 * snap_rp() + 4, snap_ranura, snap_largo + 1]);
+        // Garganta. El canto de ARRIBA es el que trabaja: al montar, la pestaña
+        // baja por el cono de la punta y cae dentro; al desmontar tiene que
+        // treparlo. El de abajo no lo toca nunca y va tendido para que el
+        // techo de la garganta no quede en voladizo al imprimir el mango.
+        rotate_extrude($fn = 64)
+            polygon([[esp2_r() - esp2_gar_prof, esp2_gar_z],
+                     [esp2_r() + 0.01,          esp2_gar_z - esp2_gar_baja],
+                     [esp2_r() + 0.01,          esp2_gar_z + esp2_gar_h + esp2_gar_sube],
+                     [esp2_r() - esp2_gar_prof, esp2_gar_z + esp2_gar_h]]);
     }
 }
+
+// Ranura que libera un costado de la lengüeta: va del taladro hacia fuera y
+// arranca a esp2_leng_z0 de la boca, para no tocar la corona de apoyo.
+module esp2_ranura(k, s) {
+    y0 = esp2_y() - 0.4;          // arranca DENTRO del taladro, o la lengüeta
+    L  = 8 - y0;                  // seguiría cosida al cabezal por los costados
+    translate([s * esp2_leng_a / 2 - (s > 0 ? 0 : esp2_leng_ran),
+               k > 0 ? y0 : -8,
+               esp2_leng_z0])
+        cube([esp2_leng_ran, L, esp2_largo + 1.5]);
+}
+
 module junta_hembra_neg() {
-    difference() {
-        union() {
-            translate([0, 0, -0.01]) cylinder(r = snap_rb(), h = snap_largo + 0.6);
-            translate([0, 0, -0.01])
-                cylinder(r1 = snap_rb() + snap_chaflan, r2 = snap_rb(), h = snap_chaflan + 0.01);
-        }
-        snap_planos(snap_rb() + snap_pest + 1, 0, snap_largo + 0.7, snap_holgura);
+    esp2_en_las_dos() {
+        translate([0, 0, -0.01]) cylinder(r = esp2_rb(), h = esp2_largo + 0.5);
+        translate([0, 0, -0.01])
+            cylinder(r1 = esp2_rb() + esp2_chaflan, r2 = esp2_rb(), h = esp2_chaflan + 0.01);
     }
-    // rebajes donde encajan las pestañas
-    for (k = [0 : 1]) rotate([0, 0, 90 + 180 * k - (snap_pest_ang + 8) / 2])
-        rotate_extrude(angle = snap_pest_ang + 8, $fn = 96)
-            polygon([[snap_rb() - 0.01, snap_pest_z - snap_rampa - 0.3],
-                     [snap_rb() + snap_pest + 0.15, snap_pest_z - 0.2],
-                     [snap_rb() + snap_pest + 0.15, snap_pest_z + snap_pest_h + 0.2],
-                     [snap_rb() - 0.01, snap_pest_z + snap_pest_h + snap_rampa + 0.3]]);
+    for (k = [-1, 1]) for (s = [-1, 1]) esp2_ranura(k, s);
 }
-module junta_hembra_pos() { }
+
+// La pestaña va en la cara interior de la lengüeta, mirando hacia fuera del
+// cabezal: es la única parte de la unión que flexa, y flexa en el plano de las
+// capas. 1,5 de pared × 3,0 de ancho × 7,0 de voladizo, 0,18 de resalte: 0,84 %.
+module junta_hembra_pos() {
+    for (k = [-1, 1]) translate([0, k * esp2_y(), 0])
+        rotate([0, 0, (k > 0 ? 90 : 270) - esp2_pest_ang / 2])
+            rotate_extrude(angle = esp2_pest_ang, $fn = 96)
+                polygon([[esp2_rb() + 0.01,        esp2_gar_z - 0.30],
+                         [esp2_rb() - esp2_pest,   esp2_gar_z + 0.15],
+                         [esp2_rb() - esp2_pest,   esp2_gar_z + esp2_gar_h - 0.15],
+                         [esp2_rb() + 0.01,        esp2_gar_z + esp2_gar_h + 0.30]]);
+}
 module junta_extra() { }
 module junta_extra_montado() { }
 

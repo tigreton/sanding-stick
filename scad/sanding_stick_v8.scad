@@ -1,17 +1,33 @@
 // =====================================================================
-//  SANDING STICK SNAP — v5 · unión de CLIP ELÁSTICO
-//  Versión 5.0 · 2026-09-07 · Jorge (con Claude) · OpenSCAD 2021.01+
+//  SANDING STICK CUÑA — v8 · unión de ESPIGA Y CUÑA transversal
+//  Versión 8.0 · 2026-09-09 · Jorge (con Claude) · OpenSCAD 2021.01+
 //
-//  El vástago está partido en dos brazos flexibles, cada uno con una pestaña
-//  que encaja en un rebaje interior del cabezal. Se empuja hasta el clic y se
-//  saca de un tirón: sin girar, sin roscar y sin comprar nada.
+//  La unión de carpintería de toda la vida, a escala de bolígrafo. El vástago
+//  del mango lleva una ranura transversal; el cabezal, un alojamiento alineado
+//  con ella; y una cuña impresa entra de lado atravesando los dos. Como es
+//  cónica (1:12), meterla TIRA del vástago hacia dentro y aprieta el cabezal
+//  contra el hombro del mango.
 //
-//  Dos caras planas laterales orientan la pieza (los rebajes están a ±90°) y
-//  hacen de chaveta contra el giro. Las pestañas tienen rampa de 40° por los
-//  dos lados: entra y sale, no es un encaje permanente.
+//  Es la única de la familia con APRIETE REGULABLE: no depende de acertar una
+//  holgura, sino de cuánto empujes. Si dentro de un año la unión baila, metes
+//  la cuña medio milímetro más y vuelve a estar como el primer día. Hay 7 mm de
+//  recorrido de apriete, y la pendiente 1:12 está muy por debajo del ángulo de
+//  rozamiento del PLA: la cuña no se sale sola.
 //
-//  El parámetro a tocar si cuesta o se suelta es snap_pest (saliente de la
-//  pestaña); snap_ranura controla lo flexibles que son los brazos.
+//  La cuña es además la CHAVETA. Atraviesa el vástago, así que el giro lo
+//  bloquea ella y el taladro puede ser un cilindro liso con holgura normal.
+//  Y como mide 13,6 mm de largo dentro de un vástago de Ø8,6, resiste el
+//  descuadre mucho mejor de lo que sugiere su holgura lateral de 0,08.
+//
+//  EL PRECIO, DICHO SIN RODEOS: es la unión que más debilita el cabezal. Para
+//  que la cuña pase hay que abrir un túnel de 5 mm de ancho de lado a lado, y
+//  eso se come parte de la sección justo donde el cabezal trabaja a flexión.
+//  Está colocado lo más adentro posible —a 7,8 mm de la boca, donde el momento
+//  ya ha bajado, y antes de los 13 mm donde arranca la pala— pero sigue siendo
+//  el punto débil. Los números están en el README.
+//
+//  La cuña sobresale ~1 mm por cada lado. Es lo que permite empujarla para
+//  apretar y golpearla para sacarla, y es inevitable en una unión de cuña.
 // =====================================================================
 
 /* [Pieza a generar] */
@@ -78,19 +94,34 @@ cuello_90 = 3;
 /* [Calidad] */
 $fn = 64;
 
-/* [Clip elástico — la unión de la v5] */
-snap_d       = 8.6;   // Ø del vástago
-snap_largo   = 13;    // longitud del vástago
-snap_holgura = 0.20;  // holgura radial del taladro
-snap_ranura  = 3.8;   // ancho de la ranura que separa los dos brazos
-snap_ranura_z= 1.5;   // dónde empieza la ranura (desde el hombro)
-snap_pest    = 0.6;   // saliente radial de la pestaña
-snap_pest_z  = 8.8;   // inicio de la pestaña desde el hombro
-snap_pest_h  = 2.0;   // altura recta de la pestaña
-snap_rampa   = 0.9;   // altura de las rampas de 40° arriba y abajo
-snap_pest_ang= 62;    // ancho angular del rebaje del cabezal
-snap_plano   = 0.9;   // profundidad de las caras planas (chaveta)
-snap_chaflan = 0.8;
+/* [Cuña — la unión de la v8] */
+cun_d       = 8.6;    // Ø del vástago
+cun_largo   = 13;     // longitud del vástago
+cun_holgura = 0.15;   // holgura radial del taladro. Aquí no es crítica: quien
+                      // quita el juego es la cuña al apretar contra el hombro
+cun_z       = 7.8;    // altura de la cara de apoyo de la cuña, desde el hombro.
+                      // Subirlo debilita menos el cabezal pero se acerca a la
+                      // pala; bajarlo lo debilita donde más momento hay
+cun_ancho   = 5.0;    // ancho de la cuña
+cun_esp     = 2.6;    // espesor de la cuña en su posición nominal
+cun_pend    = 0.0833; // pendiente 1:12: cuánto engorda por mm de avance
+cun_l       = 13.6;   // longitud de la cuña (sobresale ~1 mm por lado)
+cun_hol     = 0.08;   // holgura lateral de la cuña en sus dos alojamientos
+cun_juego   = 0.6;    // cuánto más alto es el alojamiento del cabezal que la
+                      // cuña: dividido por la pendiente, 7,2 mm de apriete
+cun_rebaje  = 0.4;    // hueco bajo la cuña dentro de la ranura del vástago
+cun_chaflan = 0.8;    // chaflán de la punta del vástago
+cun_avell   = 0.4;    // avellanado de la boca del cabezal. NO subirlo: con 0,8
+                      // el avellanado se come el borde que deja cuerpo_chaflan y
+                      // la boca acaba en filo, sin cara plana contra la que
+                      // pueda apretar la cuña (medido: 0,63 mm² de apoyo con
+                      // 0,8 · 11,0 mm² con 0,4)
+
+/* [Asiento — específico de la v8] */
+// Aquí el hombro es la superficie de apoyo, y la cuña es lo que empuja contra
+// él: tiene que llegar más lejos que el borde de la boca del cabezal (Ø10,48).
+// Con 0,4 llega a Ø11,2 y la corona real de apoyo es de 11,0 mm².
+mango_chaflan_frontal = 0.4;
 
 // ---------------------------------------------------------------------
 //  Auxiliares
@@ -126,58 +157,59 @@ module sector2d(ri, ro, ang, n = 6) {
 }
 
 // ---------------------------------------------------------------------
-//  JUNTA · clip elástico
+//  JUNTA · espiga y cuña transversal
 // ---------------------------------------------------------------------
-function snap_rp() = snap_d / 2;
-function snap_rb() = snap_rp() + snap_holgura;
-module snap_planos(r, z0, h, extra) {        // quita las dos caras planas (±X)
-    p = snap_rp() - snap_plano + extra;
-    translate([ p, -r - 1, z0 - 0.01]) cube([r + 2, 2 * r + 2, h + 0.02]);
-    translate([-p - (r + 2), -r - 1, z0 - 0.01]) cube([r + 2, 2 * r + 2, h + 0.02]);
+function cun_t(y)  = cun_esp - cun_pend * y;   // espesor de la cuña en y
+function cun_y0()  = -cun_l / 2;
+function cun_y1()  =  cun_l / 2;
+
+// La cuña, y de paso sus dos alojamientos: la misma sección con márgenes.
+// La sección real está en el plano (y, z) —un trapecio— y se extruye en x.
+// El lado GRUESO va hacia -Y, que es por donde se empuja: al avanzar en +Y,
+// el material que llega a la ranura del vástago es cada vez más grueso.
+module cun_cuna(dx = 0, dtop = 0, dbot = 0, y0 = 0, y1 = 0) {
+    a = cun_y0() - y0; b = cun_y1() + y1;
+    translate([-cun_ancho / 2 - dx, 0, 0])
+        multmatrix([[0, 0, 1, 0], [1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1]])
+            linear_extrude(height = cun_ancho + 2 * dx)
+                polygon([[a, cun_z - dbot], [b, cun_z - dbot],
+                         [b, cun_z + cun_t(b) + dtop], [a, cun_z + cun_t(a) + dtop]]);
 }
-function junta_d() = snap_d;
-function junta_largo() = snap_largo;
-function junta_giro() = 0;
+
+function junta_d() = cun_d;
+function junta_largo() = cun_largo;
+function junta_giro() = 0;     // no gira: entra recto y la cuña hace el resto
 module junta_hueco_macho() { }
+
 module junta_macho(sentido = 1) {
     difference() {
         union() {
-            cylinder(r = snap_rp(), h = snap_largo - snap_chaflan);
-            translate([0, 0, snap_largo - snap_chaflan])
-                cylinder(r1 = snap_rp(), r2 = snap_rp() - snap_chaflan, h = snap_chaflan);
-            // pestañas en ±Y, sobre la cara exterior de cada brazo
-            for (k = [0 : 1]) rotate([0, 0, 90 + 180 * k - snap_pest_ang / 2])
-                rotate_extrude(angle = snap_pest_ang, $fn = 96)
-                        polygon([[snap_rp() - 0.3, snap_pest_z - snap_rampa],
-                                 [snap_rp() + snap_pest, snap_pest_z],
-                                 [snap_rp() + snap_pest, snap_pest_z + snap_pest_h],
-                                 [snap_rp() - 0.3, snap_pest_z + snap_pest_h + snap_rampa]]);
+            cylinder(d = cun_d, h = cun_largo - cun_chaflan);
+            translate([0, 0, cun_largo - cun_chaflan])
+                cylinder(d1 = cun_d, d2 = cun_d - 2 * cun_chaflan, h = cun_chaflan);
         }
-        snap_planos(snap_rp() + snap_pest, 0, snap_largo + 0.5, 0);
-        translate([-snap_rp() - 2, -snap_ranura / 2, snap_ranura_z])   // ranura entre brazos
-            cube([2 * snap_rp() + 4, snap_ranura, snap_largo + 1]);
+        // Ranura del vástago. Su TECHO es la cara de apriete: coincide con el
+        // dorso de la cuña, sin holgura, porque es donde se transmite el tiro.
+        // El suelo queda `cun_rebaje` por debajo para que la cuña no se apoye
+        // en él en vez de en el cabezal.
+        cun_cuna(cun_hol, 0, cun_rebaje, 4, 4);
     }
 }
+
 module junta_hembra_neg() {
-    difference() {
-        union() {
-            translate([0, 0, -0.01]) cylinder(r = snap_rb(), h = snap_largo + 0.6);
-            translate([0, 0, -0.01])
-                cylinder(r1 = snap_rb() + snap_chaflan, r2 = snap_rb(), h = snap_chaflan + 0.01);
-        }
-        snap_planos(snap_rb() + snap_pest + 1, 0, snap_largo + 0.7, snap_holgura);
-    }
-    // rebajes donde encajan las pestañas
-    for (k = [0 : 1]) rotate([0, 0, 90 + 180 * k - (snap_pest_ang + 8) / 2])
-        rotate_extrude(angle = snap_pest_ang + 8, $fn = 96)
-            polygon([[snap_rb() - 0.01, snap_pest_z - snap_rampa - 0.3],
-                     [snap_rb() + snap_pest + 0.15, snap_pest_z - 0.2],
-                     [snap_rb() + snap_pest + 0.15, snap_pest_z + snap_pest_h + 0.2],
-                     [snap_rb() - 0.01, snap_pest_z + snap_pest_h + snap_rampa + 0.3]]);
+    translate([0, 0, -0.01]) cylinder(d = cun_d + 2 * cun_holgura, h = cun_largo + 0.5);
+    translate([0, 0, -0.01])
+        cylinder(d1 = cun_d + 2 * cun_holgura + 2 * cun_avell, d2 = cun_d + 2 * cun_holgura,
+                 h = cun_avell + 0.01);
+    // Túnel de la cuña: `cun_juego` más alto que ella, que es el recorrido de
+    // apriete. Su SUELO es la otra cara de trabajo, y va sin holgura.
+    cun_cuna(cun_hol, cun_juego, 0, 4, 4);
 }
 module junta_hembra_pos() { }
-module junta_extra() { }
-module junta_extra_montado() { }
+
+// La cuña suelta, tumbada sobre su cara plana para imprimir
+module junta_extra() { translate([0, 0, -cun_z]) cun_cuna(); }
+module junta_extra_montado() { cun_cuna(); }
 
 // ---------------------------------------------------------------------
 //  MANGO

@@ -1,17 +1,35 @@
 // =====================================================================
-//  SANDING STICK SNAP — v5 · unión de CLIP ELÁSTICO
-//  Versión 5.0 · 2026-09-07 · Jorge (con Claude) · OpenSCAD 2021.01+
+//  SANDING STICK PINZA — v9 · unión de PINZA CÓNICA
+//  Versión 9.0 · 2026-09-09 · Jorge (con Claude) · OpenSCAD 2021.01+
 //
-//  El vástago está partido en dos brazos flexibles, cada uno con una pestaña
-//  que encaja en un rebaje interior del cabezal. Se empuja hasta el clic y se
-//  saca de un tirón: sin girar, sin roscar y sin comprar nada.
+//  Una pinza de portaminas. La boca del cabezal va partida en cuatro dedos por
+//  ranuras axiales, y su exterior es un cono; un casquillo cónico se empuja con
+//  el pulgar sobre ese cono y cierra los dedos sobre el vástago del mango.
 //
-//  Dos caras planas laterales orientan la pieza (los rebajes están a ±90°) y
-//  hacen de chaveta contra el giro. Las pestañas tienen rampa de 40° por los
-//  dos lados: entra y sale, no es un encaje permanente.
+//  Lo que ninguna otra versión tiene: **el apriete no se agota**. Las demás
+//  reparten un número fijo de holgura y cuando el uso se lo come, se acabó. Aquí
+//  hay 2 mm de recorrido de casquillo y cada milímetro cierra 0,125 mm de
+//  diámetro, así que la unión se puede reapretar durante toda la vida de la
+//  herramienta. Y el agarre es todo el que quieras darle: la conicidad 1:8
+//  multiplica por ocho la fuerza del pulgar y está muy por debajo del ángulo de
+//  rozamiento del PLA, así que el casquillo no se afloja solo.
 //
-//  El parámetro a tocar si cuesta o se suelta es snap_pest (saliente de la
-//  pestaña); snap_ranura controla lo flexibles que son los brazos.
+//  LA PINZA VA EN EL CABEZAL, no en el mango, y no es un capricho: si fuera al
+//  revés los cabezales necesitarían un vástago macho saliendo en horizontal de
+//  la boca, y dejarían de poder imprimirse planos sobre su cara de lijado, que
+//  es la decisión de la que cuelga todo el proyecto. A cambio, el mango es el
+//  más simple de las nueve versiones: un cilindro liso de Ø8,6. Y cada cabezal
+//  se puede montar sobre cualquier varilla de Ø8,6 — un tubo largo para llegar
+//  al fondo de una caja, por ejemplo.
+//
+//  El casquillo no se pierde: por detrás no puede pasar al mango (su taladro
+//  trasero es de Ø11,05 y el mango es de Ø12) y por delante topa con el cuerpo
+//  del cabezal. Sólo sale con el cabezal desmontado, que es cuando toca
+//  limpiarlo.
+//
+//  Es la más voluminosa de la familia: un collar de Ø14,6 × 6 mm en la punta.
+//  Y la deformación de trabajo del dedo es del 0,48 %, un tercio de la del clip
+//  de la v5, porque el dedo es corto y sólo tiene que cerrar 0,075 mm.
 // =====================================================================
 
 /* [Pieza a generar] */
@@ -78,19 +96,30 @@ cuello_90 = 3;
 /* [Calidad] */
 $fn = 64;
 
-/* [Clip elástico — la unión de la v5] */
-snap_d       = 8.6;   // Ø del vástago
-snap_largo   = 13;    // longitud del vástago
-snap_holgura = 0.20;  // holgura radial del taladro
-snap_ranura  = 3.8;   // ancho de la ranura que separa los dos brazos
-snap_ranura_z= 1.5;   // dónde empieza la ranura (desde el hombro)
-snap_pest    = 0.6;   // saliente radial de la pestaña
-snap_pest_z  = 8.8;   // inicio de la pestaña desde el hombro
-snap_pest_h  = 2.0;   // altura recta de la pestaña
-snap_rampa   = 0.9;   // altura de las rampas de 40° arriba y abajo
-snap_pest_ang= 62;    // ancho angular del rebaje del cabezal
-snap_plano   = 0.9;   // profundidad de las caras planas (chaveta)
-snap_chaflan = 0.8;
+/* [Pinza — la unión de la v9] */
+pin_d        = 8.6;    // Ø del vástago del mango. Es toda la parte macho
+pin_largo    = 12;     // longitud del vástago
+pin_holgura  = 0.15;   // holgura diametral del taladro con el casquillo suelto
+pin_dedos    = 4;      // número de dedos de la pinza
+pin_ranura   = 0.8;    // ancho de las ranuras entre dedos
+pin_l_dedo   = 10;     // longitud de los dedos
+pin_alivio   = 1.4;    // Ø del taladro de alivio al final de cada ranura: sin él
+                       // la ranura acaba en un ángulo vivo y es donde agrietaría
+pin_d_boca   = 11.0;   // Ø exterior de la pinza en la boca
+pin_pend     = 0.125;  // conicidad del exterior de la pinza, en Ø por mm (1:8)
+pin_z_cono   = 6.0;    // hasta dónde llega el cono exterior
+pin_col_d    = 14.6;   // Ø exterior del casquillo
+pin_col_l    = 6.0;    // longitud del casquillo
+pin_col_hol  = 0.05;   // holgura del casquillo en reposo: el apriete empieza
+                       // después de 0,4 mm de recorrido
+pin_col_flauta = 6;    // acanaladuras de agarre del casquillo
+pin_chaflan  = 0.6;    // chaflán de la punta del vástago y de la boca
+
+/* [Asiento — específico de la v9] */
+// El hombro tiene que llegar a la corona del cabezal (Ø8,75 a Ø11,0) pero
+// quedarse por dentro del taladro trasero del casquillo (Ø11,05) o se tocarían.
+// Con 0,6 muere en Ø10,8: apoya en 1,0 mm de corona y deja 0,125 de margen.
+mango_chaflan_frontal = 0.6;
 
 // ---------------------------------------------------------------------
 //  Auxiliares
@@ -126,58 +155,73 @@ module sector2d(ri, ro, ang, n = 6) {
 }
 
 // ---------------------------------------------------------------------
-//  JUNTA · clip elástico
+//  JUNTA · pinza cónica con casquillo de apriete
 // ---------------------------------------------------------------------
-function snap_rp() = snap_d / 2;
-function snap_rb() = snap_rp() + snap_holgura;
-module snap_planos(r, z0, h, extra) {        // quita las dos caras planas (±X)
-    p = snap_rp() - snap_plano + extra;
-    translate([ p, -r - 1, z0 - 0.01]) cube([r + 2, 2 * r + 2, h + 0.02]);
-    translate([-p - (r + 2), -r - 1, z0 - 0.01]) cube([r + 2, 2 * r + 2, h + 0.02]);
-}
-function junta_d() = snap_d;
-function junta_largo() = snap_largo;
+function pin_H(z)  = pin_d_boca + pin_pend * z;      // Ø exterior de la pinza
+function pin_rb()  = pin_d / 2 + pin_holgura / 2;    // radio del taladro
+
+function junta_d() = pin_d;
+function junta_largo() = pin_largo;
 function junta_giro() = 0;
 module junta_hueco_macho() { }
+
+// El macho más simple de la familia: un cilindro liso. Todo el mecanismo está
+// en el cabezal y en el casquillo.
 module junta_macho(sentido = 1) {
-    difference() {
-        union() {
-            cylinder(r = snap_rp(), h = snap_largo - snap_chaflan);
-            translate([0, 0, snap_largo - snap_chaflan])
-                cylinder(r1 = snap_rp(), r2 = snap_rp() - snap_chaflan, h = snap_chaflan);
-            // pestañas en ±Y, sobre la cara exterior de cada brazo
-            for (k = [0 : 1]) rotate([0, 0, 90 + 180 * k - snap_pest_ang / 2])
-                rotate_extrude(angle = snap_pest_ang, $fn = 96)
-                        polygon([[snap_rp() - 0.3, snap_pest_z - snap_rampa],
-                                 [snap_rp() + snap_pest, snap_pest_z],
-                                 [snap_rp() + snap_pest, snap_pest_z + snap_pest_h],
-                                 [snap_rp() - 0.3, snap_pest_z + snap_pest_h + snap_rampa]]);
-        }
-        snap_planos(snap_rp() + snap_pest, 0, snap_largo + 0.5, 0);
-        translate([-snap_rp() - 2, -snap_ranura / 2, snap_ranura_z])   // ranura entre brazos
-            cube([2 * snap_rp() + 4, snap_ranura, snap_largo + 1]);
-    }
+    cylinder(d = pin_d, h = pin_largo - pin_chaflan);
+    translate([0, 0, pin_largo - pin_chaflan])
+        cylinder(d1 = pin_d, d2 = pin_d - 2 * pin_chaflan, h = pin_chaflan);
 }
+
 module junta_hembra_neg() {
+    // taladro y avellanado
+    translate([0, 0, -0.01]) cylinder(r = pin_rb(), h = pin_largo + 0.5);
+    translate([0, 0, -0.01])
+        cylinder(r1 = pin_rb() + pin_chaflan, r2 = pin_rb(), h = pin_chaflan + 0.01);
+    // cono exterior: se rebaja el cuerpo Ø12 hasta la generatriz de la pinza
     difference() {
-        union() {
-            translate([0, 0, -0.01]) cylinder(r = snap_rb(), h = snap_largo + 0.6);
-            translate([0, 0, -0.01])
-                cylinder(r1 = snap_rb() + snap_chaflan, r2 = snap_rb(), h = snap_chaflan + 0.01);
-        }
-        snap_planos(snap_rb() + snap_pest + 1, 0, snap_largo + 0.7, snap_holgura);
+        translate([0, 0, -0.01]) cylinder(r = 20, h = pin_z_cono + 0.01);
+        translate([0, 0, -0.02])
+            cylinder(d1 = pin_H(-0.02), d2 = pin_H(pin_z_cono + 0.02), h = pin_z_cono + 0.04);
     }
-    // rebajes donde encajan las pestañas
-    for (k = [0 : 1]) rotate([0, 0, 90 + 180 * k - (snap_pest_ang + 8) / 2])
-        rotate_extrude(angle = snap_pest_ang + 8, $fn = 96)
-            polygon([[snap_rb() - 0.01, snap_pest_z - snap_rampa - 0.3],
-                     [snap_rb() + snap_pest + 0.15, snap_pest_z - 0.2],
-                     [snap_rb() + snap_pest + 0.15, snap_pest_z + snap_pest_h + 0.2],
-                     [snap_rb() - 0.01, snap_pest_z + snap_pest_h + snap_rampa + 0.3]]);
+    // ranuras entre dedos, cada una acabada en su taladro de alivio.
+    // A 45° para que ninguna caiga en el plano horizontal ni en el vertical del
+    // cabezal al imprimir: así ninguna cara de ranura baja de 45°.
+    for (k = [0 : pin_dedos - 1]) rotate([0, 0, 360 * k / pin_dedos + 45]) {
+        translate([-pin_ranura / 2, 0, -0.01]) cube([pin_ranura, 10, pin_l_dedo + 0.01]);
+        translate([0, 0, pin_l_dedo]) rotate([-90, 0, 0]) cylinder(d = pin_alivio, h = 10);
+    }
 }
 module junta_hembra_pos() { }
-module junta_extra() { }
-module junta_extra_montado() { }
+
+// ---- el casquillo -----------------------------------------------------
+// Su taladro es el mismo cono que la pinza, más `pin_col_hol`. Empujarlo hacia
+// la pala lo lleva sobre diámetros mayores y cierra los dedos; tirar de él hacia
+// el mango lo libera. Se imprime de pie: así el taladro cónico se abre hacia
+// arriba —sin voladizos— y la tracción de aro cae dentro de las capas, no entre
+// ellas, que es donde el PLA no aguanta.
+module pin_casquillo() {
+    difference() {
+        cylinder(d = pin_col_d, h = pin_col_l);
+        translate([0, 0, -0.01])
+            cylinder(d1 = pin_H(0) + pin_col_hol, d2 = pin_H(pin_col_l) + pin_col_hol,
+                     h = pin_col_l + 0.02);
+        // acanaladuras de agarre
+        for (k = [0 : pin_col_flauta - 1]) rotate([0, 0, 360 * k / pin_col_flauta])
+            translate([pin_col_d / 2 + 1.0, 0, -0.01]) cylinder(d = 3.0, h = pin_col_l + 0.02);
+        // Chaflanes de los dos cantos. Van como ANILLO a restar, no como cono:
+        // un cono macizo con el radio grande abajo se lleva por delante toda la
+        // pieza en su primer plano, que fue lo que pasó en el primer intento.
+        for (t = [0, 1]) translate([0, 0, t * (pin_col_l - 0.5)]) difference() {
+            translate([0, 0, -0.01]) cylinder(r = pin_col_d, h = 0.5 + 0.02);
+            translate([0, 0, -0.02])
+                cylinder(r1 = pin_col_d / 2 - (t ? 0 : 0.5), r2 = pin_col_d / 2 - (t ? 0.5 : 0),
+                         h = 0.5 + 0.04);
+        }
+    }
+}
+module junta_extra() { pin_casquillo(); }
+module junta_extra_montado() { pin_casquillo(); }
 
 // ---------------------------------------------------------------------
 //  MANGO

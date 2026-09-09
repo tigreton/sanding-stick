@@ -1,6 +1,12 @@
 // =====================================================================
 //  SANDING STICK BAY90 — v2 · unión de BAYONETA de 1/4 de vuelta
-//  Versión 2.0 · 2026-09-07 · Jorge (con Claude) · OpenSCAD 2021.01+
+//  Versión 2.1 · 2026-09-08 · Jorge (con Claude) · OpenSCAD 2021.01+
+//
+//  v2.1 — La 2.0 se aflojaba lijando de lado. El canal era 0,12 mm más alto
+//  que el tetón, así que el tetón flotaba: la cuña no apretaba nada y la
+//  muesca de retención pasaba por debajo sin tocar (aprieto real −0,06 mm).
+//  Ahora el juego axial del canal es un parámetro, `bay_juego_ax` = 0,05, y
+//  la muesca muerde 0,16 mm de verdad.
 //
 //  El mango termina en un vástago Ø8,6 con dos ranuras en L. El cabezal lleva
 //  un taladro Ø8,96 con dos tetones interiores. Se mete a fondo y se gira 90°
@@ -13,7 +19,9 @@
 // =====================================================================
 
 /* [Pieza a generar] */
-pieza = "conjunto";           // ["mango","cabezal","test_ajuste","conjunto","interferencia"]
+pieza = "conjunto";           // ["mango","cabezal","test_ajuste","conjunto","interferencia","extra"]
+                              // "extra" es la pieza suelta de las uniones que la
+                              // necesitan (la cuña de la v8); vacía en las demás
 variante_mango = "recta";     // ["recta","ergonomica","doble"]
 giro_vista = 1;               // 1 = montado y bloqueado · 0 = alineado para insertar
 
@@ -32,7 +40,9 @@ fondo_canal = 2;
 mango_diametro = 12;
 mango_largo = 125;
 mango_chaflan = 1.5;
-mango_chaflan_frontal = 1.0;
+mango_chaflan_frontal = 1.0;  // Es lo que le queda de asiento al cabezal: el hombro
+                              // llega hasta Ø(12 - 2*chaflán). Cada versión lo ajusta
+                              // a la boca de SU cabezal (la v2 lo baja a 0,3).
 ranuras_num = 7;
 ranuras_ancho = 1.6;
 ranuras_prof = 0.6;
@@ -43,6 +53,23 @@ ergo_d_frente = 11;
 ergo_d_max = 14;
 ergo_pos_max = 55;
 ergo_d_atras = 10.5;
+
+/* [Falda exterior — opcional, vale para las diez uniones] */
+// Con falda > 0 el cabezal envuelve por fuera un tramo rebajado de la punta del
+// mango. Traslada la corona de apoyo de Ø8,8–10,4 a Ø9,8–11,2: misma unión, el
+// doble de inercia contra el basculamiento, y una guía radial más que alarga la
+// base de apoyo por delante del plano de la junta en vez de por detrás.
+// Cuesta `falda` mm de longitud de herramienta y ~240 mm³ por cabezal.
+falda = 0;                    // longitud de la falda (0 = sin falda; 6 es lo probado)
+falda_pared = 1.6;            // pared de la falda: la espiga queda en Ø(12 - 2·pared).
+                              // No subirlo: el contrataladro tiene que ser más ancho
+                              // que la hembra de la junta o no se puede llegar a ella
+falda_juego = 0.10;           // holgura radial entre falda y espiga
+falda_chaflan = 0.3;          // chaflán de entrada de la espiga y de la falda. Con 0,6
+                              // el avellanado se comía la corona entera: mismo fallo
+                              // que la boca en filo de la v2.2
+falda_ch_boca = 0.3;          // chaflán exterior de la boca cuando hay falda. El 0,8
+                              // de cuerpo_chaflan dejaría la corona en 9 mm²
 
 /* [Cuerpo del cabezal] */
 cuerpo_d = 12;
@@ -66,12 +93,25 @@ bay_juego_ang = 4;     // holgura angular por lado en la ranura de entrada
 bay_teton_t   = 2.6;   // espesor axial del tetón
 bay_z         = 8.4;   // cara inferior del tetón, medida desde el hombro
 bay_giro      = 90;    // ángulo de bloqueo
-bay_rampa     = 0.25;  // cuánto baja el techo del canal a lo largo del giro
-bay_muesca    = 0.06;  // resalte de retención antes del asiento (0 = sin clic)
+bay_juego_ax  = 0.05;  // juego axial del tetón dentro del canal — CRÍTICO:
+                       // si es mayor que la muesca, el tetón flota y la
+                       // unión se afloja al lijar de lado (era 0,15 en la 2.0)
+bay_rampa     = 0.40;  // cuánto baja el techo del canal a lo largo del giro
+bay_muesca    = 0.18;  // resalte de retención antes del asiento (0 = sin clic)
 bay_aprieto   = 0.03;  // interferencia en el asiento final
 bay_chaflan   = 0.8;   // chaflán de la punta del vástago y de la boca
 bay_pasos     = 44;    // resolución angular del canal helicoidal
 bay_sentido   = -1;    // -1 = bloquea girando el cabezal a derechas
+
+/* [Asiento — específico de la v2] */
+// El hombro del mango tiene que llegar más lejos que el borde de la boca del
+// cabezal (r = 5,24 en la v2) o el cabezal va en voladizo sobre el vástago.
+// Con el 1,0 del esqueleto el hombro moría en r = 5,00 y no se tocaban.
+mango_chaflan_frontal = 0.3;
+// Y el mango ergonómico arrancaba en Ø11: con el chaflán, hombro hasta r = 5,20,
+// que se queda 0,04 corto. Ø11,6 le da r = 5,50 y sigue siendo más fino que el
+// recto en la zona de los dedos.
+ergo_d_frente = 11.6;
 
 // ---------------------------------------------------------------------
 //  Auxiliares
@@ -88,8 +128,13 @@ function r_ergo_s(s) = s <= ergo_pos_max
     ? ergo_d_frente / 2 + (ergo_d_max - ergo_d_frente) / 2 * coseno(s / ergo_pos_max)
     : ergo_d_max / 2 + (ergo_d_atras - ergo_d_max) / 2 * coseno((s - ergo_pos_max) / (mango_largo - ergo_pos_max));
 function radio_mango(z) = (variante_mango == "ergonomica") ? r_ergo_s(mango_largo - z) : mango_diametro / 2;
+// Con falda, el plano del mango doble lo limita la espiga rebajada, no la junta:
+// la espiga es más gorda que cualquier vástago y es lo primero que cortaría.
+function plano_auto() = (mango_diametro - (falda > 0 ? falda_d() : junta_d())) / 2 - 0.4;
 function plano_efectivo() = (variante_mango == "doble" && plano_antirrodadura == 0)
-    ? (mango_diametro - junta_d()) / 2 - 0.4 : plano_antirrodadura;
+    ? max(0, plano_auto()) : plano_antirrodadura;
+function cuerpo_L() = cuerpo_largo + falda;              // cuerpo, falda incluida
+function falda_d()  = mango_diametro - 2 * falda_pared;  // Ø de la espiga rebajada
 function ranura_s0() = (variante_mango == "doble")
     ? (mango_largo - (ranuras_num - 1) * ranuras_paso) / 2 : ranuras_inicio;
 
@@ -119,16 +164,16 @@ function bay_techo(f) =
     :                          bay_zt() - bay_aprieto;
 
 module bay_ranura(sentido) {
-    rg = bay_rg(); ro = bay_rp() + 1.2; w = bay_ranura_ang();
-    rotate([0, 0, -w / 2]) translate([0, 0, bay_z - 0.15])
+    rg = bay_rg(); ro = bay_rp() + 1.2; w = bay_ranura_ang(); ja = bay_juego_ax;
+    rotate([0, 0, -w / 2]) translate([0, 0, bay_z - ja])
         linear_extrude(height = bay_largo - bay_z + 1.5) sector2d(rg, ro, w);
     // El canal arranca dos pasos ANTES de la ranura de entrada para que los dos
     // negativos se solapen en volumen y no queden slivers en la unión.
     N = bay_pasos; tot = bay_ang_total();
     for (i = [-2 : N - 1]) {
         f0 = tot * i / N; f1 = tot * (i + 1) / N;
-        rotate([0, 0, sentido * (f0 - w / 2)]) translate([0, 0, bay_z - 0.15])
-            linear_extrude(height = bay_techo(max(f0, 0)) - bay_z + 0.15)
+        rotate([0, 0, sentido * (f0 - w / 2)]) translate([0, 0, bay_z - ja])
+            linear_extrude(height = bay_techo(max(f0, 0)) - bay_z + ja)
                 sector2d(rg, ro, sentido * (f1 - f0 + 0.15), 2);
     }
 }
@@ -156,15 +201,20 @@ module junta_hembra_pos() {
         translate([0, 0, bay_z])
             linear_extrude(height = bay_teton_t) sector2d(bay_rt(), bay_rb() + 0.01, bay_teton_ang);
 }
+module junta_extra() { }
+module junta_extra_montado() { }
 
 // ---------------------------------------------------------------------
 //  MANGO
 // ---------------------------------------------------------------------
 module perfil_mango() {
     n = 80; chf = mango_chaflan_frontal;
+    // En la variante doble el extremo de atrás también es un hombro: lleva el
+    // chaflán pequeño, no el de culata, o el cabezal de ese lado no apoya.
+    ch0 = (variante_mango == "doble") ? chf : mango_chaflan;
     pts = concat(
-        [[0, 0], [radio_mango(0) - mango_chaflan, 0]],
-        [for (i = [0 : n]) let(z = mango_chaflan + (mango_largo - mango_chaflan - chf) * i / n) [radio_mango(z), z]],
+        [[0, 0], [radio_mango(0) - ch0, 0]],
+        [for (i = [0 : n]) let(z = ch0 + (mango_largo - ch0 - chf) * i / n) [radio_mango(z), z]],
         [[radio_mango(mango_largo) - chf, mango_largo], [0, mango_largo]]
     );
     polygon(pts);
@@ -181,14 +231,15 @@ module mango() {
     difference() {
         union() {
             rotate_extrude() perfil_mango();
-            translate([0, 0, mango_largo]) junta_macho(1);
-            if (variante_mango == "doble") mirror([0, 0, 1]) junta_macho(-1);
+            translate([0, 0, mango_largo]) { falda_espiga(); translate([0, 0, falda]) junta_macho(1); }
+            if (variante_mango == "doble")
+                mirror([0, 0, 1]) { falda_espiga(); translate([0, 0, falda]) junta_macho(-1); }
         }
         ranuras_mango();
-        if (variante_mango == "doble") junta_hueco_macho();
+        if (variante_mango == "doble") translate([0, 0, falda]) junta_hueco_macho();
         if (pl > 0)
-            translate([-50, -mango_diametro / 2 - 20, -junta_largo() - 5])
-                cube([100, 20 + pl, mango_largo + 2 * junta_largo() + 10]);
+            translate([-50, -mango_diametro / 2 - 20, -junta_largo() - falda - 5])
+                cube([100, 20 + pl, mango_largo + 2 * (junta_largo() + falda) + 10]);
     }
 }
 
@@ -196,12 +247,33 @@ module mango() {
 //  CABEZAL  (orientación de impresión: cara de lijado en z = 0)
 // ---------------------------------------------------------------------
 module a_eje_cuerpo(a) { translate(P(a)) rotate([0, a, 0]) rotate([0, -90, 0]) children(); }
-module a_boca(a) { a_eje_cuerpo(a) translate([0, 0, cuerpo_largo]) mirror([0, 0, 1]) children(); }
+// La boca es el extremo exterior del cabezal, falda incluida. El marco de la
+// JUNTA está `falda` mm más adentro: a_junta().
+module a_boca(a) { a_eje_cuerpo(a) translate([0, 0, cuerpo_L()]) mirror([0, 0, 1]) children(); }
+module a_junta(a) { a_boca(a) translate([0, 0, falda]) children(); }
+// Contrataladro de la falda, en el marco de la boca
+module falda_hueco() {
+    if (falda > 0) {
+        translate([0, 0, -0.01])
+            cylinder(d = falda_d() + 2 * falda_juego, h = falda + 0.01);
+        translate([0, 0, -0.01])
+            cylinder(d1 = falda_d() + 2 * falda_juego + 2 * falda_chaflan,
+                     d2 = falda_d() + 2 * falda_juego, h = falda_chaflan + 0.01);
+    }
+}
+// Espiga rebajada de la punta del mango, con su chaflán de entrada
+module falda_espiga() {
+    if (falda > 0) {
+        cylinder(d = falda_d(), h = falda - falda_chaflan);
+        translate([0, 0, falda - falda_chaflan])
+            cylinder(d1 = falda_d(), d2 = falda_d() - 2 * falda_chaflan, h = falda_chaflan);
+    }
+}
 
 module cuerpo(a) {
-    r = cuerpo_d / 2; ch = cuerpo_chaflan;
+    r = cuerpo_d / 2; ch = (falda > 0) ? falda_ch_boca : cuerpo_chaflan; L = cuerpo_L();
     a_eje_cuerpo(a) rotate_extrude()
-        polygon([[0, 0], [r, 0], [r, cuerpo_largo - ch], [r - ch, cuerpo_largo], [0, cuerpo_largo]]);
+        polygon([[0, 0], [r, 0], [r, L - ch], [r - ch, L], [0, L]]);
 }
 module cuerpo_base(a) { a_eje_cuerpo(a) cylinder(d = cuerpo_d - 0.6, h = 3); }
 
@@ -269,10 +341,11 @@ module cabezal() {
                 }
             }
         }
-        a_boca(a) junta_hembra_neg();
+        a_junta(a) junta_hembra_neg();
+        a_boca(a) falda_hueco();
         translate([-200, -200, -100]) cube([400, 400, 100]);
     }
-    a_boca(a) junta_hembra_pos();
+    a_junta(a) junta_hembra_pos();
 }
 
 // ---------------------------------------------------------------------
@@ -281,14 +354,17 @@ module cabezal() {
 module test_ajuste() {
     difference() {
         cuerpo(0);
-        a_boca(0) junta_hembra_neg();
+        a_junta(0) junta_hembra_neg();
+        a_boca(0) falda_hueco();
         translate([-200, -200, -100]) cube([400, 400, 100]);
     }
-    a_boca(0) junta_hembra_pos();
+    a_junta(0) junta_hembra_pos();
     translate([19, 0, 0]) {
         cylinder(d = mango_diametro, h = 8);
-        translate([0, 0, 8]) junta_macho(1);
+        translate([0, 0, 8]) falda_espiga();
+        translate([0, 0, 8 + falda]) junta_macho(1);
     }
+    translate([9.5, -14, 0]) junta_extra();     // vacío salvo en las uniones que la usan
 }
 
 // ---------------------------------------------------------------------
@@ -297,13 +373,14 @@ module test_ajuste() {
 module mango_montado() {
     a = ang_efectivo();
     d = [-cos(a), 0, sin(a)];
-    M = P(a) + cuerpo_largo * d;
+    M = P(a) + cuerpo_L() * d;
     translate(M) rotate([0, 90 + a, 0]) rotate([0, 0, junta_giro() * giro_vista])
         translate([0, 0, -mango_largo]) children();
 }
 module conjunto() {
     color("#d9a441") cabezal();
     color("#4a6fa5") mango_montado() mango();
+    color("#b5483f") a_junta(ang_efectivo()) junta_extra_montado();
 }
 // Comprobación: el volumen debe ser ~0. Si sale grande, macho y hembra chocan.
 //   openscad -o x.stl -D 'pieza="interferencia"' -D mango_largo=8 -D ranuras_num=0 ...
@@ -313,5 +390,9 @@ module interferencia() { intersection() { cabezal(); mango_montado() mango(); } 
 if (pieza == "mango") mango();
 else if (pieza == "cabezal") cabezal();
 else if (pieza == "test_ajuste") test_ajuste();
+else if (pieza == "extra") junta_extra();
+// La pieza suelta ya colocada en el marco del cabezal. No es para imprimir:
+// es lo que come el visor 3D, que la pinta como tercera malla del conjunto.
+else if (pieza == "extra_puesto") a_junta(ang_efectivo()) junta_extra_montado();
 else if (pieza == "interferencia") interferencia();
 else conjunto();

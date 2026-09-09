@@ -10,10 +10,10 @@ final.
 
 ---
 
-## Paso 1 · ¿Qué enganche? (≈1 h, 12 cm³)
+## Paso 1 · ¿Qué enganche? (≈2 h, 26 cm³ las diez)
 
-Imprime los cinco `test_ajuste_vN.stl` en una sola bandeja. Cada uno trae el
-cuerpo con la hembra y un tapón con el macho, sueltos.
+Cada `test_ajuste_vN.stl` trae el cuerpo con la hembra y un tapón con el macho,
+sueltos — y en la v8 y la v9, también su tercera pieza.
 
 | Pieza | cm³ | Unión |
 |---|---|---|
@@ -22,16 +22,43 @@ cuerpo con la hembra y un tapón con el macho, sueltos.
 | `test_ajuste_v3` | 2,50 | rosca cuadrada |
 | `test_ajuste_v4` | 2,39 | imán + chaveta en D |
 | `test_ajuste_v5` | 2,25 | clip elástico |
+| `test_ajuste_v6` | 2,61 | cola de milano transversal |
+| `test_ajuste_v7` | 2,65 | cono autoblocante |
+| `test_ajuste_v8` | 2,86 | espiga y cuña · **lleva cuña** |
+| `test_ajuste_v9` | 2,86 | pinza cónica · **lleva casquillo** |
+| `test_ajuste_v10` | 2,56 | doble espiga con clic |
+
+Diez ya no caben en «un rato». Para imprimir sólo unas cuantas:
+
+```bash
+VERS="v10 v6 v7" ./test_rapido.sh v6
+```
+
+Ese trío es un buen primer corte: la **v10** es la que mejor sale en cualquier
+impresora, la **v6** la que mejor aguanta el uso y la **v7** la única que no tiene
+holgura que calibrar. Si sale bien la v10 y mal alguna otra, el problema es de
+calibración, no del diseño.
 
 Móntalos y desmóntalos veinte veces. Lo que buscas: que entre sin forzar, que
 quede firme, y que el gesto no te moleste. **La v4 necesita dos imanes Ø6×3** para
 probarla de verdad; sin ellos sólo comprueba que la espiga entra.
 
-Estas cinco piezas también están versionadas a calidad final en
+Estas piezas también están versionadas a calidad final en
 `stl/vN/test_ajuste.stl`: si no tienes OpenSCAD instalado, imprime ésas.
+
+**Ojo con lo que mide esta pieza.** Su tapón es un cilindro Ø12 sin chaflán, así
+que apoya en todo el anillo de la boca del cabezal — más de lo que apoyaba el
+mango hasta la corrección del 8 de septiembre. Sirve para calibrar holguras; para
+juzgar cuánto agarra de verdad, hay que ir al paso 2.
 
 Si alguno va duro o baila, corrige **una sola variable** (la que dice «calibrar»
 en el README de esa versión) y reimprime sólo esa pieza.
+
+### Si vienes de la v2.0
+
+`mango_corto_v2.stl` y `test_ajuste_v2.stl` son ya de la **v2.1**, que corrige el
+aflojado al lijar de lado. El cambio está sólo en la parte macho: **reimprime el
+mango y sigue usando los cabezales que ya tienes**.
 
 ## Paso 2 · Con el mango en la mano (≈45 min por versión, 6,5 cm³)
 
